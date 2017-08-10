@@ -126,7 +126,7 @@ social_icons:
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.jpg
 # in site  directory(source/uploads): /uploads/avatar.jpg
-avatar:/uploads/avatar.jpg
+avatar: /uploads/avatar.jpg
 
 # Table Of Contents in the Sidebar
 toc:
@@ -189,8 +189,8 @@ excerpt_description: true
 # Automatically Excerpt. Not recommend.
 # Please use <!-- more --> in the post to control excerpt accurately.
 auto_excerpt:
-  enable: false
-  length: 150
+  enable: true
+  length: 400
 
 # Post meta display settings
 post_meta:
