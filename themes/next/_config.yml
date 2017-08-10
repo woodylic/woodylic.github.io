@@ -14,7 +14,7 @@ keywords: "Hexo, NexT"
 rss:
 
 # Specify the date when the site was setup
-#since: 2015
+since: 2017
 
 # icon between year and author @Footer
 authoricon: heart
@@ -105,16 +105,16 @@ social_icons:
   # Icon Mappings.
   # KeyMapsToSocialItemKey: NameOfTheIconFromFontAwesome
   GitHub: github
-  E-Mail: envelope
-  Google: google
-  Twitter: twitter
-  FB Page: facebook
-  VK Group: vk
-  Skype: skype
-  YouTube: youtube
-  Instagram: instagram
-  StackOverflow: stack-overflow
-  Weibo: weibo
+  # E-Mail: envelope
+  # Google: google
+  # Twitter: twitter
+  # FB Page: facebook
+  # VK Group: vk
+  # Skype: skype
+  # YouTube: youtube
+  # Instagram: instagram
+  # StackOverflow: stack-overflow
+  # Weibo: weibo
 
 # Blog rolls
 #links_title: Links
@@ -126,7 +126,7 @@ social_icons:
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.jpg
 # in site  directory(source/uploads): /uploads/avatar.jpg
-#avatar:
+avatar:/uploads/avatar.jpg
 
 # Table Of Contents in the Sidebar
 toc:
@@ -249,7 +249,7 @@ custom_logo:
 # Available value:
 #    normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: normal
+highlight_theme: night
 
 
 # ---------------------------------------------------------------
@@ -540,7 +540,7 @@ tabs:
 #! ---------------------------------------------------------------
 
 # Motion
-use_motion: true
+use_motion: false
 
 # Fancybox
 fancybox: true

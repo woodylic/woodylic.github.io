@@ -2,7 +2,7 @@
 - git
 - npm
 - hexo-cli (npm install -g hexo-cli)
-- hexo-deployer ()
+- hexo-deployer (npm install -g hexo-deployer-git)
 
 ## 还原
 ```
