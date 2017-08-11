@@ -108,8 +108,7 @@ qiniu:
   offline: false
   sync: true
   bucket: blog-assets
-  access_key: ULqEMifeZYYpL_WM_YrYWz71cBXmcJy2m2SlSDq3
-  secret_key: KeprYG--_VkhO0EqFQC8PLe2B36i7eRYT17d3GYq
+  secret_file: sec/qn.json
   dirPrefix: static
   urlPrefix: http://ouih852ej.bkt.clouddn.com/static
   up_host: http://upload.qiniu.com
