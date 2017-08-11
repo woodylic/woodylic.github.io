@@ -4,7 +4,9 @@ date: 2017-08-11 00:13:44
 tags: architecture
 ---
 
-原文：https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50
+# 原文
+
+https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50
 
 # 前言
 
