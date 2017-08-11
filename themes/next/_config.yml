@@ -344,6 +344,16 @@ changyan:
 # You can get your uid from https://livere.com/insight/myCode (General web site)
 #livere_uid: your uid
 
+# Gitment
+# Introduction: https://imsun.net/posts/gitment-introduction/
+gitment:
+  enable: true
+  githubID: woodylic
+  repo: woodylic.github.io
+  ClientID: 2106df437f5c0fb0a901
+  ClientSecret: a8b716c2752000e03054f8bff9a059fa35ef7d3c
+  lazy: false
+
 # Baidu Share
 # Available value:
 #    button | slide
