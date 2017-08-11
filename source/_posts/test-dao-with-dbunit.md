@@ -1,7 +1,7 @@
 ---
 title: 用DbUnit实现Dao层的单元测试
 date: 2017-02-22 14:37:53
-tags: test dbunit
+tags: [test, dbunit]
 ---
 
 # 前言

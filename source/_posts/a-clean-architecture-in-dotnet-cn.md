@@ -1,7 +1,7 @@
 ---
 title: 翻译：A Clean Architecture in .Net （未完成）
 date: 2017-08-11 00:13:44
-tags: architecture
+tags: [architecture]
 ---
 
 # 原文

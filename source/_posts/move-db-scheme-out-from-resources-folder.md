@@ -1,7 +1,7 @@
 ---
 title: 把db scheme脚本移出resources目录
 date: 2017-03-02 00:00:50
-tags: maven
+tags: [maven, database, migration]
 ---
 
 在[用DbUnit实现Dao层的单元测试](https://github.com/woodylic/blog/issues/2)中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化dataSource的时候，可以很方便地初始化数据库：

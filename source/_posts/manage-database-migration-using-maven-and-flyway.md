@@ -1,7 +1,7 @@
 ---
 title: 使用maven和flyway管理数据库schema
 date: 2017-03-23 23:58:41
-tags: maven flyway database migration
+tags: [maven, flyway, database, migration]
 ---
 
 # 为什么需要数据库schema版本管理

@@ -1,7 +1,7 @@
 ---
 title: slf4net和NLog集成
 date: 2017-05-31 00:10:27
-tags:
+tags: [log, NLog, slf4net]
 ---
 
 这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/

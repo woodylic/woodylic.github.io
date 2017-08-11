@@ -1,7 +1,7 @@
 ---
 title: 在maven中使用profile和filtering管理多环境配置
 date: 2017-02-23 23:46:46
-tags: maven profile filter config
+tags: [maven, profile, filter, config]
 ---
 
 # Filtering
