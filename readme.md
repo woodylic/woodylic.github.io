@@ -12,8 +12,8 @@ npm install
 ## 常用命令
 
 ```
-//启动本地服务器： 
-hexo server
+//启动本地服务器（草稿预览）： 
+hexo server -p 3000 --drafts
 
 //清空缓存：
 hexo clean
