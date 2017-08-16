@@ -3,7 +3,7 @@ title: 翻译：A Clean Architecture in .Net （未完成）
 date: 2017-08-11 00:13:44
 tags: [architecture]
 ---
-
+sync
 # 原文
 
 https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50
@@ -140,11 +140,13 @@ Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entit
 
 ## Entities（领域实体）
 
-I’ve mentioned Entities in passing, in this example, we have a House. Let’s have a closer look.
+上面我们提到了Entity对象，比如本例中的Hourse。现在我们进一步讨论。
 
 > Uncle Bob:  
 >  
->  Entities encapsulate Enterprise wide business rules. An entity can be an object with methods, or it can be a set of data structures and functions. It doesn’t matter so long as the entities could be used by many different applications in the enterprise.
+> Entities encapsulate Enterprise wide business rules. An entity can be an object with methods, or it can be a set of data structures and functions. It doesn’t matter so long as the entities could be used by many different applications in the enterprise.  
+>  
+> Entity对象封装了企业业务规则。 一个entity类可以是有方法的对象，或者是一组数据结构和函数。
 >  
 >  If you don’t have an enterprise, and are just writing a single application, then these entities are the business objects of the application. They encapsulate the most general and high-level rules. They are the least likely to change when something external changes.
 >  
