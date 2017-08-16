@@ -25,7 +25,6 @@ hexo generate
 hexo deploy
 ```
 
-## 修改hexo端口（默认4000被占用）
+## (Optional) 修改hexo端口（默认4000被占用）
 
 找到node_modules\hexo-server\index.js文件，可以修改默认的port值
-
