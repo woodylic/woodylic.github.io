@@ -12,6 +12,8 @@ https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50
 
 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演讲的启发下，我尝试把在ASP.NET MVC应用中实践Robert提到的观点。
 
+<!-- more -->
+
 ## 老的方法
 
 > PM：客户需要可以在线上订购产品。  
