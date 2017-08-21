@@ -253,9 +253,15 @@ Finally, the Controller passes the viewmodel to the viewengine, which renders an
 
 The ‘inwards dependency rule’ is a way to keep your business rule unaffected by externalities like web frameworks and databases.
 
+遵循“向内以来规则”可以避免业务逻辑被外包框架和实现的变更所影响。
+
 This keeps the business rules clean, easily changable and testable.
 
+这样做可以保持业务逻辑独立整洁，易于测试和修改。
+
 You can then build your Web or other type of applications on top of this foundation to deliver the system to your user in a prefered way.
+
+
 
 I have provided an example of a console application which demonstrates how you can do this in .Net.
 
