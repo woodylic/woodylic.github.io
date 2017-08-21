@@ -182,27 +182,21 @@ Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entit
 
 ## 集成ASP.NET MVC应用
 
-如果你希望通过ASP.NET MVC应用来暴露我们已经实现的功能，我们接下去要写的代码将会落在Clean Architecture的Interface Adapter层。
+如果你希望通过ASP.NET MVC应用来呈现我们已经实现的业务逻辑，接下去要写的代码将会落在Clean Architecture的Interface Adapter层。
 
 > Uncle Bob:
 >  
-> The software in this layer is a set of adapters that convert data from the format most convenient for the use cases and entities, to the format most convenient for some external agency such as the Database or the Web. It is this layer, for example, that will wholly contain the MVC architecture of a GUI.
+> 处于Interface Adapter层的代码是一系列适配器，用于把数据从面向use case和业务实体的格式，转为面向外部中介（如web或database）的格式。
 > 
-> The Presenters, Views, and Controllers all belong in here. The models are likely just data structures that are passed from the controllers to the use cases, and then back from the use cases to the presenters and views.
+> Presenter，View和Controller类都位于这一层。而model很可能只是作为数据结构，在controller和use case，以及controller和presenter/view之间传递数据。
 
-Indeed this layer is where most of the web application ‘stuff’ is found.
+实际上大部分的web应用具体实现能在这层找到。
 
-当我们的客户想通过网站联系房产代理，通常他们需要填写一些HTML表单。
-
-A model binder converts the form-data is converted to a strongly typed ContactAgentRequestMessage and the request is handled by the AgentController:
-
-
+当我们的客户想通过网站联系房产代理，通常他们需要填写一些HTML表单。然后**模型绑定器(model binder)**会把表单数据转换为强类型的**ContactAgentRequestMessage**对象，并交由**AgentController**处理该请求：
 
 <script src="https://gist.github.com/stephanhoekstra/116d8ee0992811e0135c.js"></script>
 
-Now we must cross the boundary into the inner layers of the application where “the business logic happens”.
-
-We do this by invoking the Handle method on the Interactor, and it is important to stop and think about what data structure we pass into this method.
+现在我们必须越过边界进入内层，也就是业务逻辑的所在。我们通过调用Interactor对象的Handle方法做到了这点，在这里，我们需要先考虑清楚，在方法调用中，我们应该使用什么样的数据结构传递参数。
 
 > Uncle Bob:  
 >  
