@@ -50,20 +50,21 @@ https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50
 
 {% qnimg the_onion_architecture.png %}
 
-Clean Architecture的目的之一，是通过一种干净（清晰？）的方式，把应用的业务逻辑封装起来。
+Clean Architecture的目的之一，是通过一种干净清晰的方式，把应用的业务逻辑封装起来。
 
 上图展示了该架构，其中domain和use cases处于“洋葱”的中心。
 
 > Uncle Bob:  
-> 用一组同心圆表示软件的不同区域，总的来说，越往内，抽象层次越高。外圈是实现机制（web/database/etc），而内圈是策略（业务知识）。
+> 用一组同心圆表示不同层级的软件代码，总的来说，越往内，抽象层次越高。最外层的圈代表的是机制级别的系统。最内层的代表的是策略级别的系统。
 
-注意图中的依赖方向总是向内依赖。在实践中，这意味着你需要把描述业务逻辑的代码从具体交付机制（UI是web还是app，数据存放在数据库还是NoSql，等等）中分离出来。
+注意图中的依赖方向指出，**代码依赖只能使由外向内**。在实践中，这意味着你需要把描述业务逻辑的代码从具体交付机制（UI是web还是app，数据存放在数据库还是NoSql，等等）中分离出来。
 
 {% qnimg policies_and_mechanism.png %}
 
 这样能确保你的业务规则能独立存在，而不依赖于具体的框架选择和实现。
 
 这样做有以下好处：
+
 - 分离关注点。
 - 业务规则代码只描述业务领域，不关注其他。
 - 在更换数据存储或web框架时，不需要改变业务逻辑代码。
@@ -133,7 +134,7 @@ Interactor类里有几个点需要注意：
 
 Interactor类接收一个plain request，返回一个plain response。这样做可以把Interactor对象从使用它的应用中解耦出来。Interactor对象只需要知道request/response，不再需要知道其他系统实现细节。
 
-Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entity，对其进行操作，再通过Repository保存修改后的entity。这个依赖顺序是违反了向内依赖原则的，但我们可以引入接口，并通过IoC原则把依赖倒置（以解决这个矛盾）。
+Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entity，对其进行操作，再通过Repository保存修改后的entity。这个依赖顺序是违反了向内依赖规则的，但我们可以引入接口，并通过IoC原则把依赖倒置（以解决这个矛盾）。
 
 {% qnimg repository_ioc.png %}
 
@@ -145,9 +146,9 @@ Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entit
 
 > Uncle Bob:  
 >  
-> Entity封装了企业级的业务规则。 一个entity可以是有方法的对象，或者是一组数据结构和函数，这并不重要，只要确保entity可以被用在企业各个不同的应用中。
+> Entity用于封装公司的业务规则。 一个entity可以是有方法的对象，或者是一组数据结构和函数，这并不重要，只要确保entity可以被用在公司各个不同的应用中。
 >  
-> 如果你只是写一个独立的应用（而不需要考虑在企业内共享），那么entity就是该应用的业务对象。Entity封装了上层业务规则，通常来说，它们不会因为外部变动而导致需要修改。
+> 如果你只是写一个独立的应用（而不需要考虑在企业内共享），那么entity就是该应用的业务对象。Entity封装了上层业务规则，通常来说，在外部环境变动的时候，这些Entity对象是不应被改变的。
 >  
 > 例如，你不会期望Entity会被页面导航，或者安全方面的改动所影响。在任何应用中，操作层的变更都不应该影响Entity层。
 
@@ -186,9 +187,9 @@ Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entit
 
 > Uncle Bob:
 >  
-> 处于Interface Adapter层的代码是一系列适配器，用于把数据从面向use case和业务实体的格式，转为面向外部中介（如web或database）的格式。
+> 处于Interface Adapter层的代码是一系列适配器，用于把数据从便于use case和业务实体操作的格式，转为便于外部中介（如web或database）操作的格式。
 > 
-> Presenter，View和Controller类都位于这一层。而model很可能只是作为数据结构，在controller和use case，以及controller和presenter/view之间传递数据。
+> 例如GUI的MVC结构，presenter、view、controller都是属于这一层。这层很可能是通过controller将数据结构传给use case，并且返回数据给presenter和view。
 
 实际上大部分的web应用具体实现能在这层找到。
 
@@ -200,28 +201,33 @@ Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entit
 
 > Uncle Bob:  
 >  
-> Typically the data that crosses the boundaries is simple data structures. You can use basic structs or simple Data Transfer objects if you like. Or the data can simply be arguments in function calls. Or you can pack it into a hashmap, or construct it into an object.
+> 一般跨层调用的数据是简单的数据结构。你可以使用数据结构或者是简单的数据传输流，又或者可以通过函数的参数来进行传递。你也可以将数据封装到一个hashmap结构，或者一个对象中。
+>
+> 数据传输最重要的事情是无依赖，简单。我们并不希望跨层传递的数据是Entity，或者是数据表的行数据，理由是我们不希望数据有任何形式的违反依赖规则。
 >  
-> The important thing is that isolated, simple, data structures are passed across the boundaries. We don’t want to cheat and pass Entities or Database rows. We don’t want the data structures to have any kind of dependency that violates The Dependency Rule.  
+> ...
 >  
-> […] when we pass data across a boundary, it is always in the form that is most convenient for the inner circle.
+> 当我们跨层传递数据的时候，我们应该以便于内圈使用的数据格式传递。
 
-This is an essential insight. Repeat:
+最后一句是最关键的，重复一下：
 
-“当我们传递的数据需要穿越边界的时候，它总是以便于内圈使用的格式传递的。”
+“当我们跨层传递数据的时候，我们应该以便于内圈使用的数据格式传递。”
 
-In the ASP.NET world it is tempting to use ‘Entity Framework’ classes, which Visual Studio encourages. And then to use those classes all over the place (as your view models, as your entities, in your model binders, etcetera.)
+在ASP.NET的世界里，如同Visual Studio的示例，人们倾向（基于设计好的数据库）使用Entity Framework创建实体类，并且把它们用作view model，domain entity，DTO等等。人们也会很自然地使用它们在Controller和Interactor之间传递数据，但这违反了向内依赖规则。
 
-It would also be tempting to pass these across the boundary between Controller and Interactor, but that would violate the Dependency Rule.
+与之相反，内圈应该定义输入参数的数据格式。在我们的例子中，作为Interactor和Controller交互的参数，**ContactAgentRequestMessage**类同样被定义在了业务逻辑层中。这样做就遵循了向内依赖规则。
 
-Instead, the inner circle should dictate the shape of the input, which is the case in our example. the ContactAgentRequestMessage is defined inside the business logic layer alongside the interactor it corresponds with. The dependency points inwards, and ‘the web is a detail’.
-
-Finally, the interactor does it’s stuff. After evaluating some validation logic, it saves the data somewhere (invokes an IRepository which has an implementation in the outer layer).
+最后，Interactor对象完成它自己的工作。执行一系列的验证逻辑，然后把数据保存下来（保存动作通过IRepository接口执行，而具体的保存工作由外圈的IRepository实现来完成）。
 
 > Uncle Bob:
 >  
-> Similarly, data is converted, in [the interface adapter layer], from the form most convenient for entities and use cases, into the form most convenient for whatever persistence framework is being used. i.e. The Database.  
+> Similarly, data is converted, in [the interface adapter layer], from the form most convenient for entities and use cases, into the form most convenient for whatever persistence framework is being used. i.e. The Database.
+> 
+> 
+>   
 > Also in this layer is any other adapter necessary to convert data from some external form, such as an external service, to the internal form used by the use cases and entities.
+> 
+> 
 
 在本例中我简单地实现了一个假的Repository，所以在测试的时候你不需要安装和配置任何数据库。
 
@@ -229,7 +235,7 @@ Finally, the interactor does it’s stuff. After evaluating some validation logi
 
 在实际项目中，通常会使用ORM框架来实现Repository。我喜欢使用NHibernate，有时候也会考虑使用Dapper。
 
-## Presentation
+## 表现层
 
 Finally the interactor returns a ContactAgentResponseMessage message to the controller and the use case has been completed!
 
@@ -251,20 +257,10 @@ Finally, the Controller passes the viewmodel to the viewengine, which renders an
 
 # 结论
 
-The ‘inwards dependency rule’ is a way to keep your business rule unaffected by externalities like web frameworks and databases.
+遵循“向内以来规则”可以避免业务逻辑被外包框架和实现的变更所影响。这样做可以保持业务逻辑独立整洁，易于测试和修改。
 
-遵循“向内以来规则”可以避免业务逻辑被外包框架和实现的变更所影响。
+在这个（业务实现的）基础上，你可以根据用户的需要，选择以web或者其他类型的应用方式来交付系统。
 
-This keeps the business rules clean, easily changable and testable.
+我提供了一个console应用作为例子，展示在.Net中如何实践这个理论。你可以在我的github上找到该例子，其中包含本文展示的所有源码。
 
-这样做可以保持业务逻辑独立整洁，易于测试和修改。
-
-You can then build your Web or other type of applications on top of this foundation to deliver the system to your user in a prefered way.
-
-
-
-I have provided an example of a console application which demonstrates how you can do this in .Net.
-
-Thanks to Uncle Bob, Rodi Evers and Michiel van Oosterhout for inspiration!
-
-You can find a working example including all source code referenced in this article on github.
+感谢Uncle Bob，Rodi Evers和Michiel van Oosterhout提供灵感！
