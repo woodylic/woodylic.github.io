@@ -372,9 +372,13 @@ gitment:
 # Share
 #duoshuo_share: true
 
+# Baidu Webmaster tools verification setting
+# See: http://zhanzhang.baidu.com/linksubmit/
+baidu_site_verification: sXt2uSELxZ 
+
 # Google Webmaster tools verification setting
 # See: https://www.google.com/webmasters/
-#google_site_verification:
+google_site_verification: 3z03HfkO-ah9ohgzHIcd1RQ7VXQq56nMji7cF35XZwA
 
 # Google Analytics
 #google_analytics:

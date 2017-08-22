@@ -166,7 +166,9 @@ Interactor对象通过Repository（在洋葱图中称之为Gateway）获得entit
 
 {% qnimg clean_arch_console.png %}
 
+
 {% qnimg suprised_cat.png %}
+
 
 嗯，真完成了，某种意义上……
 
