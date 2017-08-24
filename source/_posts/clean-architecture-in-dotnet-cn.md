@@ -5,11 +5,6 @@ tags:
   - architecture
 ---
 
-
-# 英文原文
-
-https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50
-
 # 前言  
   
 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演讲的启发下，我尝试把在ASP.NET MVC应用中实践Robert提到的观点。
@@ -407,3 +402,5 @@ public class ContactAgentResponseViewModel
 我提供了一个console应用作为例子，展示在.Net中如何实践这个理论。你可以在我的github上找到该例子，其中包含本文展示的所有源码。
 
 感谢Uncle Bob，Rodi Evers和Michiel van Oosterhout提供灵感！
+
+**源文链接**：[Clean Architecture in .Net](https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50) （翻译：[woodylic](https://woodylic.github.io)）
