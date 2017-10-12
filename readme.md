@@ -12,16 +12,25 @@ npm install
 ## 常用命令
 
 ```
-//启动本地服务器（草稿预览）： 
+//新建文章
+hexo new "artical name"
+
+//新建草稿
+hexo new draft "artical name"
+
+//发布草稿
+hexo publish "artical name"
+
+//启动本地服务器（草稿预览）：
 hexo server -p 3000 --drafts
 
 //清空缓存：
 hexo clean
 
-//生成静态页面： 
+//生成静态页面：
 hexo generate
 
-//部署到github：  
+//部署到github：
 hexo deploy
 ```
 
