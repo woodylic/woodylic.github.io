@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="3z03HfkO-ah9ohgzHIcd1RQ7VXQq56nMji7cF35XZwA" />
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="sXt2uSELxZ" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="test,dbunit," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言Dao层的单元测试，测试目的在于：  验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。  单元测试的常规步骤是：  准备测试数据。 执行待测方法。 检查执行结果。">
+<meta name="keywords" content="test,dbunit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用DbUnit实现Dao层的单元测试">
+<meta property="og:url" content="http://woodylic.github.io/2017/02/22/test-dao-with-dbunit/index.html">
+<meta property="og:site_name" content="woodylic&#39;s tech blog">
+<meta property="og:description" content="前言Dao层的单元测试，测试目的在于：  验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。  单元测试的常规步骤是：  准备测试数据。 执行待测方法。 检查执行结果。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-10T02:16:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用DbUnit实现Dao层的单元测试">
+<meta name="twitter:description" content="前言Dao层的单元测试，测试目的在于：  验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。  单元测试的常规步骤是：  准备测试数据。 执行待测方法。 检查执行结果。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woodylic.github.io/2017/02/22/test-dao-with-dbunit/"/>
+
+
+
+
+
+  <title>用DbUnit实现Dao层的单元测试 | woodylic's tech blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">woodylic's tech blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woodylic.github.io/2017/02/22/test-dao-with-dbunit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="woodylic">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="woodylic's tech blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用DbUnit实现Dao层的单元测试</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-22T14:37:53+08:00">
+                2017-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Dao层的单元测试，测试目的在于：</p>
+<ul>
+<li>验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。</li>
+<li>验证sql语句的正确性。</li>
+</ul>
+<p>单元测试的常规步骤是：</p>
+<ol>
+<li>准备测试数据。</li>
+<li>执行待测方法。</li>
+<li>检查执行结果。</li>
+</ol>
+<a id="more"></a>
+<p>#1通常需要初始化db数据，#3通常也是检查数据库结果。</p>
+<p>在每个开发人员使用独立数据库的前提下，<a href="http://dbunit.sourceforge.net/" target="_blank" rel="external">DbUnit</a>提供了一套控制数据库状态的方法，简化#1和#3的工作。而<a href="https://springtestdbunit.github.io/spring-test-dbunit/" target="_blank" rel="external">Spring Test DbUnit</a>则提供了Spring和DbUnit集成，允许开发人员使用annotation而不是继承来完成数据库的setup和teardown。</p>
+<h1 id="待测项目介绍"><a href="#待测项目介绍" class="headerlink" title="待测项目介绍"></a>待测项目介绍</h1><p>整个测试基于<a href="https://github.com/woodylic/todo-list" target="_blank" rel="external">todo-list</a>，个人为巩固Spring MVC + MyBatis框架搭建的练习项目。</p>
+<p>该项目的数据库只有一张数据表(tbl_todos)，结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>bigint (20)</td>
+<td>自增主键</td>
+</tr>
+<tr>
+<td>title</td>
+<td>varchar(50)</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>varchar(500)</td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>0：未完成 1：已完成</td>
+</tr>
+</tbody>
+</table>
+<p>Dao接口包含几个最常见的CRUD方法，结构如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TodoDao</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">insert</span><span class="params">(TodoItem todoItem)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">update</span><span class="params">(TodoItem todoItem)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">deleteByPrimaryKey</span><span class="params">(Long id)</span></span>;</div><div class="line">    <span class="function">TodoItem <span class="title">selectByPrimaryKey</span><span class="params">(Long id)</span></span>;</div><div class="line">    <span class="function">List&lt;TodoItem&gt; <span class="title">selectAll</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="测试用例设计"><a href="#测试用例设计" class="headerlink" title="测试用例设计"></a>测试用例设计</h1><p>默认CRUD的测试用例比较简单，也不是本文重点，略。</p>
+<h1 id="测试数据准备"><a href="#测试数据准备" class="headerlink" title="测试数据准备"></a>测试数据准备</h1><p>DbUnit支持使用xml文件来定义测试数据（包括初始数据和期望结果），在本例中，预期在初始化数据库的时候，插入两条数据，测试数据文件定义如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- basic-test-data.xml --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dataset</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">tbl_todos</span> <span class="attr">id</span>=<span class="string">"1"</span> <span class="attr">title</span>=<span class="string">"Professional C#"</span> <span class="attr">description</span>=<span class="string">"4th version"</span> <span class="attr">status</span>=<span class="string">"0"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">tbl_todos</span> <span class="attr">id</span>=<span class="string">"2"</span> <span class="attr">title</span>=<span class="string">"Core Java"</span> <span class="attr">description</span>=<span class="string">"Volume I"</span> <span class="attr">status</span>=<span class="string">"0"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dataset</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><em>id其实是作为自增id存在的，但是DbUnit确实可以把id控制为需要的值，可以把id改为3，4做试验。不确定是否只在h2 database里生效。</em></p>
+<p>insert测试，预期插入一条数据，期望结果如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- expected-result-for-insert.xml --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dataset</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">tbl_todos</span> <span class="attr">id</span>=<span class="string">"1"</span> <span class="attr">title</span>=<span class="string">"Professional C#"</span> <span class="attr">description</span>=<span class="string">"4th version"</span> <span class="attr">status</span>=<span class="string">"0"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">tbl_todos</span> <span class="attr">id</span>=<span class="string">"2"</span> <span class="attr">title</span>=<span class="string">"Core Java"</span> <span class="attr">description</span>=<span class="string">"Volume I"</span> <span class="attr">status</span>=<span class="string">"0"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">tbl_todos</span> <span class="attr">id</span>=<span class="string">"3"</span> <span class="attr">title</span>=<span class="string">"Item Title"</span> <span class="attr">description</span>=<span class="string">"Item Description"</span> <span class="attr">status</span>=<span class="string">"0"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dataset</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>update和delete的期望结果类似，不在此列出。</p>
+<h1 id="单元测试环境配置"><a href="#单元测试环境配置" class="headerlink" title="单元测试环境配置"></a>单元测试环境配置</h1><p>Dao层的实现依赖Spring，单元测试也会以相同的方式获得待测Dao对象。需要准备一个专门用于Dao层单元测试的Spring配置文件。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- spring-dao-test.xml --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">beans</span>&gt;</span></div><div class="line"></div><div class="line">  <span class="comment">&lt;!-- 导入spring-dao --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">import</span> <span class="attr">resource</span>=<span class="string">"classpath:spring-dao.xml"</span> /&gt;</span></div><div class="line"></div><div class="line">  <span class="comment">&lt;!-- 覆盖原dataSource，使用h2数据库做单元测试 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSource"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DriverManagerDataSource"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"driverClassName"</span> <span class="attr">value</span>=<span class="string">"org.h2.Driver"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"url"</span> <span class="attr">value</span>=<span class="string">"jdbc:h2:mem:todo-list;DB_CLOSE_DELAY=-1;MODE=MySQL"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">jdbc:initialize-database</span> <span class="attr">data-source</span>=<span class="string">"dataSource"</span> <span class="attr">ignore-failures</span>=<span class="string">"DROPS"</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 执行下面script完成初始化 --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">jdbc:script</span> <span class="attr">location</span>=<span class="string">"classpath:db/scheme.sql"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">jdbc:initialize-database</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>一般来说用于测试的spring配置文件应该尽可能保证和项目的spring配置一致，所以通常会import项目spring配置，然后把需要修改的bean覆盖掉。本例中把数据库从MySQL改为h2，以便其他团队成员不需要做前置配置即可执行unit test。但实际上借助DbUnit，用MySQL作为单元测试的依赖也很方便。</p>
+<h1 id="编写单元测试"><a href="#编写单元测试" class="headerlink" title="编写单元测试"></a>编写单元测试</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)                         <span class="comment">//指定使用Spring Test</span></div><div class="line"><span class="meta">@ContextConfiguration</span>(value=<span class="string">"classpath:spring-dao-test.xml"</span>)    <span class="comment">//加载Spring Context</span></div><div class="line"><span class="meta">@TestExecutionListeners</span>(&#123;</div><div class="line">        DependencyInjectionTestExecutionListener.class,         <span class="comment">//为了让Spring处理DbUnit的annotation，</span></div><div class="line">        DbUnitTestExecutionListener.class &#125;)                    <span class="comment">//必须使用的ExecutionListener</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoDaoTest</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    <span class="keyword">private</span> TodoDao todoDao;</div><div class="line">    </div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="meta">@DatabaseSetup</span>(value = &#123;<span class="string">"basic-test-data.xml"</span>&#125;)             <span class="comment">//指定数据库初始化数据</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSelectAll</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">    	List&lt;TodoItem&gt; todoItems = todoDao.selectAll();</div><div class="line">        assertEquals(<span class="number">2</span>, todoItems.size());</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="meta">@DatabaseSetup</span>(value=<span class="string">"basic-test-data.xml"</span>)                 <span class="comment">//指定数据库初始化数据</span></div><div class="line">    <span class="meta">@ExpectedDatabase</span>(value=<span class="string">"expected-result-for-insert.xml"</span>)   <span class="comment">//指定数据库期望结果</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testInsert</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">    </div><div class="line">        TodoItem todo = <span class="keyword">new</span> TodoItem();</div><div class="line">        todo.setTitle(<span class="string">"Item Title"</span>);</div><div class="line">        todo.setDescription(<span class="string">"Item Description"</span>);</div><div class="line">        todo.setStatus(<span class="number">0</span>);</div><div class="line">    </div><div class="line">    	<span class="keyword">int</span> impactRows = todoDao.insert(todo);</div><div class="line">    	assertEquals(<span class="number">1</span>, impactRows);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//其他测试方法类似，略。</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><ol>
+<li>由于Dao依赖Spring生成，需要配置RunWith以及ContextConfiguration。如果不用，那么需要自己写代码读取配置文件，加载Spring Context。</li>
+<li>使用Spring Test DbUnit，必须配置好DbUnitTestExecutionListener及其依赖DependencyInjectionTestExecutionListener。</li>
+<li><p>@DatabaseSetup在执行的时候会清空数据库，再插入初始化数据。如果期望数据库在测试方法结束回滚，需要添加下面代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@DatabaseTeardown</span>(value=<span class="string">"basic-test-data.xml"</span>, DatabaseOperation.DELETE) <span class="comment">//删除data-set里的数据。</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>编写testInsert的时候，原来打算在空数据库内插入数据，预期结果是数据表里面有一条id=1的数据。但是发现JUnit在执行的时候，会优先执行SELECT测试，把basic-test-data.xml的数据加载。Teardown会把数据删除，但不是恢复数据库状态，所以在执行INSERT的时候，生成的id是3而不是1。考虑到Unit Test Case之间不允许相互依赖，在这个例子中，哪怕其他方法都做了Teardown，insert也应该做DatabaseSetup，获得一个稳定的前置状态。</p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/test/" rel="tag"># test</a>
+          
+            <a href="/tags/dbunit/" rel="tag"># dbunit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/01/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/23/manage-config-files-for-different-envs-in-maven/" rel="prev" title="在maven中使用profile和filtering管理多环境配置">
+                在maven中使用profile和filtering管理多环境配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      
+        <div id="gitment-container"></div>
+        
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="woodylic" />
+          <p class="site-author-name" itemprop="name">woodylic</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#待测项目介绍"><span class="nav-number">2.</span> <span class="nav-text">待测项目介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试用例设计"><span class="nav-number">3.</span> <span class="nav-text">测试用例设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试数据准备"><span class="nav-number">4.</span> <span class="nav-text">测试数据准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单元测试环境配置"><span class="nav-number">5.</span> <span class="nav-text">单元测试环境配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写单元测试"><span class="nav-number">6.</span> <span class="nav-text">编写单元测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#注意"><span class="nav-number">7.</span> <span class="nav-text">注意</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">woodylic</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+    
+    
+    
+    <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+    <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+    
+        <script type="text/javascript">
+            var gitment = new Gitment({
+                id: document.location.href, 
+                owner: 'woodylic',
+                repo: 'woodylic.github.io',
+                oauth: {
+                    client_id: '2106df437f5c0fb0a901',
+                    client_secret: 'a8b716c2752000e03054f8bff9a059fa35ef7d3c',
+                }});
+            gitment.render('gitment-container');
+        </script>
+    
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

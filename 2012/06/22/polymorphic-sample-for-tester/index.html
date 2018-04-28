@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="3z03HfkO-ah9ohgzHIcd1RQ7VXQq56nMji7cF35XZwA" />
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="sXt2uSELxZ" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="OOD," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="本文以自动化测试为例子解释面向对象中的多态概念。  从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。 首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。 123456789void SimpleTestCase()&amp;#123;     Navigate();     ValidateNavigate();">
+<meta name="keywords" content="OOD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面向对象的多态">
+<meta property="og:url" content="http://woodylic.github.io/2012/06/22/polymorphic-sample-for-tester/index.html">
+<meta property="og:site_name" content="woodylic&#39;s tech blog">
+<meta property="og:description" content="本文以自动化测试为例子解释面向对象中的多态概念。  从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。 首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。 123456789void SimpleTestCase()&amp;#123;     Navigate();     ValidateNavigate();">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-10T02:16:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面向对象的多态">
+<meta name="twitter:description" content="本文以自动化测试为例子解释面向对象中的多态概念。  从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。 首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。 123456789void SimpleTestCase()&amp;#123;     Navigate();     ValidateNavigate();">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woodylic.github.io/2012/06/22/polymorphic-sample-for-tester/"/>
+
+
+
+
+
+  <title>面向对象的多态 | woodylic's tech blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">woodylic's tech blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woodylic.github.io/2012/06/22/polymorphic-sample-for-tester/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="woodylic">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="woodylic's tech blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">面向对象的多态</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2012-06-22T16:26:02+08:00">
+                2012-06-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文以自动化测试为例子解释面向对象中的多态概念。 </p>
+<p>从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。</p>
+<p>首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">SimpleTestCase</span>(<span class="params"></span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">     Navigate();</div><div class="line">     ValidateNavigate(); </div><div class="line"></div><div class="line">     Back();</div><div class="line"></div><div class="line">     ValidateBack(); </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>接下去要考虑的事情，就是看怎么实现具体的方法了。很幸运地，VS开始支持录制脚本了（类似QTP），所以我们不需要太担心如何调用浏览器的navigate和back操作，录制就好。针对navigate这个动作，我们针对IE和Firefox分别录了两次。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">NavigateInIE</span>(<span class="params"></span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="comment">//在IE打开网站</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">NavidgateInFF</span>(<span class="params"></span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="comment">//在Firefox打开网站</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>但是在试图把这两个函数统一起来的时候碰到了点问题，VS能抓到IE的对象，所以NavigateInIE里面是对象调用。但VS抓不到FF的对象，所以NavigateInFF是以模拟鼠标点击的方式实现的。（以上纯属虚构，主要想表达的是，NavigateInIE和NavigateInFF这两个方法区别很大，没有任何共同点可以抽取，或者说抽取公有函数的价值不高。）同样的BackInIE()和BackInFF()也会碰到类似的问题。</p>
+<p>那么我们的test script会变成什么样呢？</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">SimpleTestCase</span>(<span class="params"><span class="keyword">string</span> browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span> (browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            NavigateInIE();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            NavigateInFF();</div><div class="line">    &#125;    </div><div class="line">    ValidateNavigate(); </div><div class="line">    <span class="keyword">switch</span> (browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            BackInIE();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            BackInIE();</div><div class="line">    &#125;</div><div class="line">    ValidateBack(); </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>test script的可读性瞬间变差了N个级别，test script里面我们应该只关心测试需要做的事情（打开网站），而不要关心事情怎么做（怎么能让IE打开一个网站）。我们试着把事情怎么做这些细节封装起来。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">SimpleTestCase</span>(<span class="params"><span class="keyword">string</span> browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    Navigate(browser);    </div><div class="line">    ValidateNavigate(); </div><div class="line">    Back(browser);</div><div class="line">    ValidateBack(); </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"><span class="keyword">string</span> browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span> (browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            NavigateInIE();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            NavigateInFF();</div><div class="line">    &#125;    </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Back</span>(<span class="params"><span class="keyword">string</span> browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span> (browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            BackInIE();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            BackInFF();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们可爱的test script又回来了，很好维护，测试要调用的时候也很方便。在两个浏览器里面测试，只要调用下面两句代码即可。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">SimpleTestCase(<span class="string">"IE"</span>);</div><div class="line">SimpleTestCase(<span class="string">"FF"</span>);</div></pre></td></tr></table></figure>
+<p>整个世界干净了，但是似乎发现了那么点坏味道。我们说，代码尽量不要copy &amp; paste，这会影响代码维护。但是回顾Navigate和Back这两个方法，会发现它们的共同点非常多，这样的代码有问题吗？</p>
+<p>如果不发生变化，代码其实无所谓可维护性，反正是给机器看的。但据说不会变化的只有变化本身，于是…</p>
+<p>市场部经理提出，现在Chrome的占有率比Firefox高了，我们应该把它列入到测试范围。看看我们需要做什么：</p>
+<ol>
+<li>增加（录制）NavigateInChrome方法</li>
+<li>增加（录制）BackInChrome方法</li>
+<li>修改Navigate方法，为Chrome增加一条选择支</li>
+<li>修改Back方法，为Chrome增加一条选择支</li>
+<li>增加test script的调用，SimpleTestCase(“Chrome”)</li>
+</ol>
+<p>其中3和4，它们的修改会非常相似，都是需要增加类似下面的代码。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> <span class="string">"Chrome"</span>:</div><div class="line">     <span class="comment">//Do something In Chrome</span></div></pre></td></tr></table></figure>
+<p>想像一下，如果我们在测试过程中，用到的浏览器功能不只是navigate和back，还有其他的100个浏览器功能，那增加对Chrome支持的时候，我们不是要把上面的代码复制102次？？有什么办法能解决这个问题呢？</p>
+<p>我们先回顾一下上一篇文章里面出现问题的代码。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"><span class="keyword">string</span> browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span> (browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            NavigateInIE();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            NavigateInFF();</div><div class="line">    &#125;    </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Back</span>(<span class="params"><span class="keyword">string</span> browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span> (browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            BackInIE();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            BackInFF();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在尝试解决重复代码时，我们会把相同的代码放到一个公共函数，把不同的代码以参数形式传递过去。在上面的代码中，不同的代码，其实就是4个方法，NavigateInXxx和BackInXxx。但是在试图抽取公共函数的时候，碰到了点麻烦。我们说了，不同的内容会作为参数，但是，现在的情况下，不同的内容是函数，函数怎么传递呢？ 貌似我们要开始考虑面向对象了，因为：1、对象可以作为参数传递。2、对象里面可以定义函数（方法）。</p>
+<p>我们现在知道的信息是，各种NavigateInXxx和BackInXxx函数是需要传递的，那么这些函数都应该封装到对象里面，因为这些都是IE/Friefox的行为，我们很容易想到，要定义IE/Firefox类，因为方法被封装在了各自的类里面，InXxx的后缀就可以不要了。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> <span class="title">IE</span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"></span>)</span>;    <span class="comment">//原来的NavigateInIE();</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Back</span>(<span class="params"></span>)</span>;        <span class="comment">//原来的BackInIE();</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">class</span> <span class="title">Firefox</span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"></span>)</span>;    <span class="comment">//原来的NavigateInFF();</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Back</span>(<span class="params"></span>)</span>;        <span class="comment">//原来的BackInFF();</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们又看到各种重复的代码，根据面向对象的思想，我们会试着为两个很类似的类建立父类Browser，然后让IE和Firefox都继承于Browser。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> <span class="title">Browser</span></div><div class="line">&#123;</div><div class="line">    <span class="comment">//声明为抽象函数，因为Browser并不知道IE/Firefox自己的具体实现</span></div><div class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"></span>)</span>;  </div><div class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">Back</span>(<span class="params"></span>)</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">class</span> <span class="title">IE</span> : <span class="title">Browser</span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">override</span> <span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"></span>)</span>&#123;<span class="comment">/*impl*/</span>&#125;    <span class="comment">//原来的NavigateInIE()</span></div><div class="line">    <span class="function"><span class="keyword">override</span> <span class="keyword">void</span> <span class="title">Back</span>(<span class="params"></span>)</span>&#123;<span class="comment">/*impl*/</span>&#125;        <span class="comment">//原来的BackInIE()</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">class</span> <span class="title">Firefox</span> : <span class="title">Browser</span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">override</span> <span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"></span>)</span>&#123;<span class="comment">/*impl*/</span>&#125;    <span class="comment">//原来的NavigateInFF()</span></div><div class="line">    <span class="function"><span class="keyword">override</span> <span class="keyword">void</span> <span class="title">Back</span>(<span class="params"></span>)</span>&#123;<span class="comment">/*impl*/</span>&#125;        <span class="comment">//原来的BackInFF()</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>至此，我们可以说，我的代码是面向对象的。但是，似乎除了多写一个Browser类，我们并没有得到任何的好处，IE和Firefox有各自的Navigate和Back的实现，没法通过继承父类得到，还是得自己重现一遍。那么，Browser类创建出来有什么用呢？</p>
+<p>我们回到Navigate函数，现在因为把NavigateInIE和NavigateInFF分别封装到了IE和Firefox对象里面，我的代码可以写成这样：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"><span class="keyword">string</span> browser, Browser browserObj</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span>(browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            (IE)browserObj.Navigate();            <span class="comment">//把类型由Browser转义成IE</span></div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            (Firefox)browserObj.Navigate();       <span class="comment">//把类型由Browser转义成Firefox</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样稍微能看出来一点Browser类的作用了。 Navigate的第一个参数browser，可以接收”IE”和”FF”字符串，第二个参数，也应该可以接收IE对象和Firefox对象。怎么做到这点呢？用IE类和Firefox类的父类Browser作为参数类型即可。</p>
+<p>我们已经成功地把一个函数封装在对象里，通过这个对象传递给了另一个函数。看看还有没有优化的余地。在调用browserObj.Navigate()的时候，我先把Browser类型转换成了具体的子类（IE/Firefox），但实际上并不需要这样。由于面向对象多态的支持，在代码运行时，运行环境有办法知道browserObj的真实类型，并不需要显示地转义。继续改进Navigate函数。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params"><span class="keyword">string</span> browser, Browser browserObj</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">switch</span>(browser)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="string">"IE"</span>:</div><div class="line">            browserObj.Navigate();</div><div class="line">        <span class="keyword">case</span> <span class="string">"FF"</span>:</div><div class="line">            browserObj.Navigate();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这时候，会有点点凌乱，无论传递过去的brower是什么，走哪条选择支，最后被执行的语句都是browserObj.Navigate(); 那我为什么还要把browser传递过去呢？进一步地说，我是不是连选择判断都可以去掉呢？继续修改Navigate函数。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Navigate</span>(<span class="params">Browser browserObj</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    browserObj.Navigate();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>神奇的事情发生了，之前引起维护困难的switch…case…语句消失了。 这时候，要测试IE的Navigate功能，代码如下。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Navigate(<span class="keyword">new</span> IE());</div></pre></td></tr></table></figure>
+<p>我把IE对象传递过去，真正想传递的其实是把IE的Navigate方法。 当browserObj.Navigate()执行的时候，真正执行的是ie.Navigate()而不是browser.Navigate()，这就是传说中的多态…</p>
+<p>而至此，Navigate函数也已经没有存在的必要了：我要调用Navigate函数的时候，要传过去一个browser对象，那我为什么不直接调用browser.Navigate()呢？Back同理。</p>
+<p>说了那么多，把老板交下来的任务都忘了。回到我们的自动化测试，因为上面做的各种封装，我们的test script会变成这个样子。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">SimpleTestCase</span>(<span class="params">Browser browser</span>)</span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    browser.Navigate();   </div><div class="line">    ValidateNavigate(); </div><div class="line">    browser.Back();</div><div class="line">    ValidateBack(); </div><div class="line">&#125;</div><div class="line"></div><div class="line">SimpleTestCase(<span class="keyword">new</span> IE());       <span class="comment">//在IE下测试</span></div><div class="line">SimpleTestCase(<span class="keyword">new</span> Firefox());  <span class="comment">//在Firefox下测试</span></div></pre></td></tr></table></figure>
+<p>和之前其实没什么两样， 但一旦需求变更来到，我们就能看到不同了。还是那个问题，现在我们的脚本要支持在Chrome下测试，还是把要做的事情列出来：</p>
+<ol>
+<li>增加Chrome类。</li>
+<li>为Chrome类实现（录制）Navigate方法。</li>
+<li>为Chrome类实现（录制）Back方法。</li>
+<li>增加test script的调用。 SimpleTestCase(new Chrome()); </li>
+</ol>
+<p>我们把在前一种实现中，为了应对变化所需要做的事情也复制过来：</p>
+<ol>
+<li>增加（录制）NavigateInChrome方法</li>
+<li>增加（录制）BackInChrome方法</li>
+<li>修改Navigate方法，为Chrome增加一条选择支</li>
+<li>修改Back方法，为Chrome增加一条选择支</li>
+<li>增加test script的调用，SimpleTestCase(“Chrome”) </li>
+</ol>
+<p>有什么区别呢？</p>
+<p>从工作量的角度看，第二种方式要多写一点搭建类框架的代码，但是不用修改switch case选择支，如前文说的，当我们实现的浏览器功能有100个的时候，可以发现比起省下来修改switch case的时间，多出来的搭建类框架的代码，工作量不值一提。</p>
+<p>更重要的是，有没有发现第二种方式要做的，都是“增加”代码，而不是“修改”现有代码？这就是所谓的<a href="https://baike.baidu.com/item/%E5%BC%80%E6%94%BE%E5%B0%81%E9%97%AD%E5%8E%9F%E5%88%99?fromTaglist=" target="_blank" rel="external">开放封闭原则</a>。 </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OOD/" rel="tag"># OOD</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/01/hello-world/" rel="prev" title="Hello World">
+                Hello World <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      
+        <div id="gitment-container"></div>
+        
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="woodylic" />
+          <p class="site-author-name" itemprop="name">woodylic</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">woodylic</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+    
+    
+    
+    <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+    <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+    
+        <script type="text/javascript">
+            var gitment = new Gitment({
+                id: document.location.href, 
+                owner: 'woodylic',
+                repo: 'woodylic.github.io',
+                oauth: {
+                    client_id: '2106df437f5c0fb0a901',
+                    client_secret: 'a8b716c2752000e03054f8bff9a059fa35ef7d3c',
+                }});
+            gitment.render('gitment-container');
+        </script>
+    
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

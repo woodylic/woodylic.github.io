@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="3z03HfkO-ah9ohgzHIcd1RQ7VXQq56nMji7cF35XZwA" />
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="sXt2uSELxZ" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="maven,flyway,database,migration," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="为什么需要数据库schema版本管理作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间，schema随着需求变化，而这些变化难以追踪记录，从而导致开发人员之间，以及各个环境下的数据库schema的一致性问题。 引入数据库schema版本管理，是期望模仿代码版本控制，把schema的所有版本记录下来，并且可以自动地把数据库升级到最新版本。 参考：">
+<meta name="keywords" content="maven,flyway,database,migration">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用maven和flyway管理数据库schema">
+<meta property="og:url" content="http://woodylic.github.io/2017/03/23/manage-database-migration-using-maven-and-flyway/index.html">
+<meta property="og:site_name" content="woodylic&#39;s tech blog">
+<meta property="og:description" content="为什么需要数据库schema版本管理作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间，schema随着需求变化，而这些变化难以追踪记录，从而导致开发人员之间，以及各个环境下的数据库schema的一致性问题。 引入数据库schema版本管理，是期望模仿代码版本控制，把schema的所有版本记录下来，并且可以自动地把数据库升级到最新版本。 参考：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-10T02:16:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用maven和flyway管理数据库schema">
+<meta name="twitter:description" content="为什么需要数据库schema版本管理作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间，schema随着需求变化，而这些变化难以追踪记录，从而导致开发人员之间，以及各个环境下的数据库schema的一致性问题。 引入数据库schema版本管理，是期望模仿代码版本控制，把schema的所有版本记录下来，并且可以自动地把数据库升级到最新版本。 参考：">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woodylic.github.io/2017/03/23/manage-database-migration-using-maven-and-flyway/"/>
+
+
+
+
+
+  <title>使用maven和flyway管理数据库schema | woodylic's tech blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">woodylic's tech blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woodylic.github.io/2017/03/23/manage-database-migration-using-maven-and-flyway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="woodylic">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="woodylic's tech blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用maven和flyway管理数据库schema</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-23T23:58:41+08:00">
+                2017-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="为什么需要数据库schema版本管理"><a href="#为什么需要数据库schema版本管理" class="headerlink" title="为什么需要数据库schema版本管理"></a>为什么需要数据库schema版本管理</h1><p>作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间，schema随着需求变化，而这些变化难以追踪记录，从而导致开发人员之间，以及各个环境下的数据库schema的一致性问题。</p>
+<p>引入数据库schema版本管理，是期望模仿代码版本控制，把schema的所有版本记录下来，并且可以自动地把数据库升级到最新版本。</p>
+<p><em>参考：<a href="https://flywaydb.org/getstarted/why" target="_blank" rel="external">Why database migrations?</a></em></p>
+<a id="more"></a>
+<h1 id="liquibase和flyway"><a href="#liquibase和flyway" class="headerlink" title="liquibase和flyway"></a>liquibase和flyway</h1><p>liquibase和flyway都是数据库schema版本管理工具。liquibase提供了更强大的功能，比如多数据库支持，rollback等。而flyway没有引入过多的概念，使用更为简单。在够用的情况下，使用flyway学习成本更低。</p>
+<h1 id="flyway基础"><a href="#flyway基础" class="headerlink" title="flyway基础"></a>flyway基础</h1><p>flyway要求为每一次数据库schema变更创建一个sql语句，以VN<strong>（双下划线）作为前缀（比如V1 </strong>create_table_A.sql, V2__create_index_on_field_1。）</p>
+<p>配置好数据库连接，执行flyway migrate命令，flyway会自动执行需要的脚本（比如在空数据库执行，会顺序执行V1和V2两个脚本，而在和V1版本一致的数据库执行，只会执行V2脚本），把数据库更新到最新状态。</p>
+<p>在第一次执行flyway migrate的时候，flyway会在数据库中建立一张默认命名为schema_version的表，用于跟踪该数据库实例的schema版本变更。</p>
+<p>除了migrate，flyway还支持clean, validate, baseline等命令。具体可以查看<a href="https://flywaydb.org/documentation/" target="_blank" rel="external">flyway document</a>.</p>
+<h1 id="通过maven使用flyway"><a href="#通过maven使用flyway" class="headerlink" title="通过maven使用flyway"></a>通过maven使用flyway</h1><p>flyway支持命令行，java api，maven，gradle等各种方式调用。我接触的项目使用maven进行管理，所以选择了通过maven使用flyway的方式。</p>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>下面是在标准的maven文件夹结构中，增加了/src/main/db/migration，用于存放数据库脚本。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">src</div><div class="line">|--main</div><div class="line">   |--db</div><div class="line">      |--migration</div><div class="line">   |--java</div><div class="line">   |--resources</div><div class="line">|--test</div><div class="line">pom.xml</div></pre></td></tr></table></figure>
+<h2 id="maven集成flyway"><a href="#maven集成flyway" class="headerlink" title="maven集成flyway"></a>maven集成flyway</h2><p>把以下节点放入pom.xml。大多数情况下，flyway配置中使用的数据库驱动依赖和数据库连接，与dependency/db.properties里的值是一样的，所以本例假设在pom.xml中统一定义，在flyway配置中直接引用。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></div><div class="line">        <span class="comment">&lt;!-- 通过mvn flyway:migrate命令自动migrate数据库。 --&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.flywaydb<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flyway-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flywaydb.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">                <span class="comment">&lt;!-- 配置flyway使用的数据库驱动 --&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;mysql.driver.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">                <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">                <span class="comment">&lt;!-- 配置目标数据库连接 --&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">driver</span>&gt;</span>$&#123;db.driver&#125;<span class="tag">&lt;/<span class="name">driver</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>$&#123;db.url&#125;<span class="tag">&lt;/<span class="name">url</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">user</span>&gt;</span>$&#123;db.user&#125;<span class="tag">&lt;/<span class="name">user</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">password</span>&gt;</span>$&#123;db.password&#125;<span class="tag">&lt;/<span class="name">password</span>&gt;</span></div><div class="line">                <span class="comment">&lt;!-- 配置数据库脚本位置，本里中对应/src/main/db/migration --&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">locations</span>&gt;</span></div><div class="line">                    <span class="tag">&lt;<span class="name">location</span>&gt;</span>$&#123;db.migration.location&#125;<span class="tag">&lt;/<span class="name">location</span>&gt;</span></div><div class="line">                <span class="tag">&lt;/<span class="name">locations</span>&gt;</span></div><div class="line">                <span class="comment">&lt;!-- 设置sql脚本文件的编码 --&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">encoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">encoding</span>&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="使用flyway同步数据库"><a href="#使用flyway同步数据库" class="headerlink" title="使用flyway同步数据库"></a>使用flyway同步数据库</h2><p>假设使用场景如下：</p>
+<ul>
+<li>Day 1：项目启动，开发A和B把数据库schema大致定，开始工作。</li>
+</ul>
+<p>A或B需要在db/migration目录建立数据库schema脚本，命名为V1__initialize.sql，checkin到svn。A和B获取最新代码，并执行migrate命令，初始化本地数据库（并创建flyway版本控制表）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn flyway:migrate</div></pre></td></tr></table></figure>
+<ul>
+<li>Day 2：A在开发中需要修改table1，B在开发中需要新建table2，对应的修改应该先反映到migration下：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">db/migration</div><div class="line">   |--V1__initialize.sql        <span class="comment">//创建于Day 1</span></div><div class="line">   |--V2__update_table_1.sql    <span class="comment">//A创建于Day 2</span></div><div class="line">   |--V3__add_table_2.sql       <span class="comment">//B创建于Day 2</span></div></pre></td></tr></table></figure>
+<p>然后A和B获取最新代码，重新执行flyway migrate，得到对方的更新。</p>
+<p><em>以上场景，A和B有可能都把文件前缀命名为V2（因为不知道对方需要更新），这里需要A和B协调后重命名其中一个为V3。</em></p>
+<h2 id="使用Spring和flyway自动初始化数据库"><a href="#使用Spring和flyway自动初始化数据库" class="headerlink" title="使用Spring和flyway自动初始化数据库"></a>使用Spring和flyway自动初始化数据库</h2><p>可以设置在Spring启动的时候，自动检测数据库版本，如果不是最新的，则自动更新。但一般生产环境应该不会使用这种，这种能力，一般应该是在自动化测试里面使用，每次自动化测试前，使用flyway创建一个新的数据库。</p>
+<p>首先需要在pom添加flyway-core依赖。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 测试启动的时候，使用flyway自动初始化数据库。 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.flywaydb<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flyway-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flywaydb.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>然后修改spring-dao-test配置，声明在flywayBean加载的时候，执行migrate操作。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 使用flyway初始化数据库 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"flyway"</span> <span class="attr">class</span>=<span class="string">"org.flywaydb.core.Flyway"</span> <span class="attr">init-method</span>=<span class="string">"migrate"</span> <span class="attr">depends-on</span>=<span class="string">"dataSource"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>/&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"encoding"</span> <span class="attr">value</span>=<span class="string">"UTF-8"</span>/&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"locations"</span> <span class="attr">value</span>=<span class="string">"$&#123;db.migration.location&#125;"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure>
+<h1 id="项目实践思考"><a href="#项目实践思考" class="headerlink" title="项目实践思考"></a>项目实践思考</h1><p>我还没在正式项目中使用过数据库schema版本管理，预计以后会按以下方法实践：</p>
+<p>(1) 先在开发过程使用flyway，暂不考虑用于生产环境数据库管理。</p>
+<p>在开发过程中，每次修改的可能是一些小的变动。而在部署生产环境的时候，应更倾向于把某个开发周期的所有变更合并成一个部署文件。生产环境一般需要跳板机连接，跳板机上未必允许安装flyway。另外flyway维护的话，需要创建schema_version表，生产环境也可能不允许。更重要的是，在升级生产环境数据库的时候，需要考虑不影响现有数据，这在开发周期容易被忽略。</p>
+<p>(2) 版本号定义和生产环境部署脚本。</p>
+<p>参照(1)，项目中的db文件夹下的内容可能如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">db</div><div class="line">  |--migration</div><div class="line">     |--V1.0.1__create_table_1.sql</div><div class="line">     |--V1.0.2__create_table_2.sql</div><div class="line">     |--V1.1.1__create_table_3.sql</div><div class="line">     |--V1.1.2__create_table_4.sql</div><div class="line">  |--deployment     </div><div class="line">     |--v1.0_database_change.sql</div><div class="line">     |--v1.1_database_change.sql</div></pre></td></tr></table></figure>
+<p>其中migration里面的内容是每次数据库更新的相应脚本，deployment里面的脚本，在每个版本部署前，人工（通过migration脚本整合，或者从测试数据库导出）创建，修改并测试后用于部署生产环境。</p>
+<p>在本例中，产品的两个迭代，版本分别为v1.0和v1.1，migration脚本的版本则比产品版本多一级。</p>
+<p>(3) migration脚本checkin后不应再被修改。</p>
+<p>根据flyway的机制，如果数据库的schema版本已经是最新，则不会执行更新。如果脚本checkin后，被其他开发使用过了，再次修改，那么新的修改内容将无法同步给已执行过该脚本的数据库。</p>
+<p>考虑到数据库schema修改相对频度较低，开发人员应该考虑清楚，设计相对稳定后，再checkin数据库migration脚本。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://blog.waterstrong.me/flyway-in-practice/" target="_blank" rel="external">快速掌握和使用Flyway</a><br><a href="http://www.cnblogs.com/humeng126/p/3662704.html" target="_blank" rel="external">Java敏捷数据库迁移框架</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/maven/" rel="tag"># maven</a>
+          
+            <a href="/tags/flyway/" rel="tag"># flyway</a>
+          
+            <a href="/tags/database/" rel="tag"># database</a>
+          
+            <a href="/tags/migration/" rel="tag"># migration</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/02/move-db-scheme-out-from-resources-folder/" rel="next" title="把db scheme脚本移出resources目录">
+                <i class="fa fa-chevron-left"></i> 把db scheme脚本移出resources目录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/31/slf4net-and-nlog/" rel="prev" title="slf4net和NLog集成">
+                slf4net和NLog集成 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      
+        <div id="gitment-container"></div>
+        
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="woodylic" />
+          <p class="site-author-name" itemprop="name">woodylic</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要数据库schema版本管理"><span class="nav-number">1.</span> <span class="nav-text">为什么需要数据库schema版本管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#liquibase和flyway"><span class="nav-number">2.</span> <span class="nav-text">liquibase和flyway</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#flyway基础"><span class="nav-number">3.</span> <span class="nav-text">flyway基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通过maven使用flyway"><span class="nav-number">4.</span> <span class="nav-text">通过maven使用flyway</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构"><span class="nav-number">4.1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maven集成flyway"><span class="nav-number">4.2.</span> <span class="nav-text">maven集成flyway</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用flyway同步数据库"><span class="nav-number">4.3.</span> <span class="nav-text">使用flyway同步数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Spring和flyway自动初始化数据库"><span class="nav-number">4.4.</span> <span class="nav-text">使用Spring和flyway自动初始化数据库</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目实践思考"><span class="nav-number">5.</span> <span class="nav-text">项目实践思考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">woodylic</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+    
+    
+    
+    <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+    <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+    
+        <script type="text/javascript">
+            var gitment = new Gitment({
+                id: document.location.href, 
+                owner: 'woodylic',
+                repo: 'woodylic.github.io',
+                oauth: {
+                    client_id: '2106df437f5c0fb0a901',
+                    client_secret: 'a8b716c2752000e03054f8bff9a059fa35ef7d3c',
+                }});
+            gitment.render('gitment-container');
+        </script>
+    
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

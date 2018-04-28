@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="3z03HfkO-ah9ohgzHIcd1RQ7VXQq56nMji7cF35XZwA" />
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="sXt2uSELxZ" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="log,NLog,slf4net," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/ 关于为什么用slf4net，可以参照这篇文章：第三方组件引用另一个第三方组件的悲剧。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。">
+<meta name="keywords" content="log,NLog,slf4net">
+<meta property="og:type" content="article">
+<meta property="og:title" content="slf4net和NLog集成">
+<meta property="og:url" content="http://woodylic.github.io/2017/05/31/slf4net-and-nlog/index.html">
+<meta property="og:site_name" content="woodylic&#39;s tech blog">
+<meta property="og:description" content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/ 关于为什么用slf4net，可以参照这篇文章：第三方组件引用另一个第三方组件的悲剧。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-10T02:16:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="slf4net和NLog集成">
+<meta name="twitter:description" content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/ 关于为什么用slf4net，可以参照这篇文章：第三方组件引用另一个第三方组件的悲剧。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woodylic.github.io/2017/05/31/slf4net-and-nlog/"/>
+
+
+
+
+
+  <title>slf4net和NLog集成 | woodylic's tech blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">woodylic's tech blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woodylic.github.io/2017/05/31/slf4net-and-nlog/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="woodylic">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="woodylic's tech blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">slf4net和NLog集成</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-31T00:10:27+08:00">
+                2017-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是一个slf4net和NLog集成的简单例子。<a href="https://github.com/woodylic/logging-facade-samples/" target="_blank" rel="external">https://github.com/woodylic/logging-facade-samples/</a></p>
+<p>关于为什么用slf4net，可以参照这篇文章：<br><a href="http://www.cnblogs.com/blqw/p/3726493.html" target="_blank" rel="external">第三方组件引用另一个第三方组件的悲剧</a>。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。</p>
+<a id="more"></a>
+<h1 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Slf4Net.Sample</div><div class="line">    |-- Slf4Net.Sample.Library</div><div class="line">    |-- Slf4Net.Sample.App</div></pre></td></tr></table></figure>
+<p>其中Slf4Net.Sample.Library是组件，Slf4Net.Sample.App是程序入口，调用Slf4Net.Sample.Library实现功能。</p>
+<h1 id="实现Slf4Net-Sample-Library"><a href="#实现Slf4Net-Sample-Library" class="headerlink" title="实现Slf4Net.Sample.Library"></a>实现Slf4Net.Sample.Library</h1><p>该项目只包含一个Class, SomeComponent。该类包含一个方法DoSomething，在方法起止位置分别写log。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SomeComponent</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> slf4net.ILogger _logger = slf4net.LoggerFactory.GetLogger(<span class="keyword">typeof</span>(SomeComponent));</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DoSomething</span>(<span class="params"></span>)</span></div><div class="line"><span class="function">    </span>&#123;</div><div class="line">        _logger.Info(<span class="string">"Before executing ..."</span>);</div><div class="line">        </div><div class="line">        Console.WriteLine(<span class="string">"Executing DoSomething"</span>);</div><div class="line">        </div><div class="line">        _logger.Info(<span class="string">"After executing ..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该项目只依赖slf4net，logger类型为slf4net.ILogger，通过slf4net.LoggerFactory获得。具体使用哪个log library，对此项目没有任何影响。</p>
+<h1 id="实现Slf4Net-Sample-App"><a href="#实现Slf4Net-Sample-App" class="headerlink" title="实现Slf4Net.Sample.App"></a>实现Slf4Net.Sample.App</h1><p>App项目作为程序入口，只是对Library项目的简单调用。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> <span class="title">Program</span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></div><div class="line"><span class="function">    </span>&#123;</div><div class="line">        <span class="keyword">new</span> Slf4Net.Sample.Library.SomeComponent().DoSomething();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="在Slf4Net-Sample-App配置日志模块"><a href="#在Slf4Net-Sample-App配置日志模块" class="headerlink" title="在Slf4Net.Sample.App配置日志模块"></a>在Slf4Net.Sample.App配置日志模块</h1><p>对日志功能的实现，依赖slf4net，slf4net.NLog和NLog。通常通过配置方式声明：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">configSections</span>&gt;</span>    </div><div class="line">    <span class="tag">&lt;<span class="name">section</span> <span class="attr">name</span>=<span class="string">"slf4net"</span> <span class="attr">type</span>=<span class="string">"slf4net.Configuration.SlfConfigurationSection, slf4net"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">section</span> <span class="attr">name</span>=<span class="string">"nlog"</span> <span class="attr">type</span>=<span class="string">"NLog.Config.ConfigSectionHandler, NLog"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">configSections</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!-- slf4net选择NLog作为Log实现 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">slf4net</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">factory</span> <span class="attr">type</span>=<span class="string">"slf4net.NLog.NLogLoggerFactory, slf4net.NLog"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">slf4net</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!-- NLog的配置 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">nlog</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">targets</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">target</span> <span class="attr">type</span>=<span class="string">"Console"</span> <span class="attr">name</span>=<span class="string">"simpleLog"</span> <span class="attr">encoding</span>=<span class="string">"UTF-8"</span> <span class="attr">layout</span>=<span class="string">"$&#123;date:format=HH\:mm\:ss.fff&#125; [$&#123;level&#125;] $&#123;message&#125;"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">targets</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">rules</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"*"</span> <span class="attr">minlevel</span>=<span class="string">"Info"</span> <span class="attr">writeTo</span>=<span class="string">"simpleLog"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">rules</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">nlog</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>通常而言日志的配置比较长，推荐放到外部文件NLog.config。这样App.config的nlog节点需要修改为</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">nlog</span> <span class="attr">configSource</span>=<span class="string">"NLog.config"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p>通过nuget安装NLog.Config和NLog.Schema，会自动创建NLog.config和NLog.xsd，前者提供一个简单的NLog模板，后者实现了智能提示，辅助开发人员更方便地编写NLog配置。</p>
+<h1 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h1><p>如果日志功能无效，可以通过在nlog节点打开internalLog（默认是Off，可以改为Debug），通过查看异常信息排查。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">nlog</span> <span class="attr">internalLogLevel</span>=<span class="string">"Debug"</span> <span class="attr">internalLogFile</span>=<span class="string">"c:\temp\nlog-internal.log"</span>&gt;</span></div></pre></td></tr></table></figure>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="https://github.com/ef-labs/slf4net/wiki/Configuration" target="_blank" rel="external">slf4net Configuration</a></li>
+<li><a href="https://github.com/NLog/NLog/wiki" target="_blank" rel="external">Nlog wiki</a></li>
+</ul>
+<h1 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h1><p>Common.Logging是另一个logging facade，比slf4net活跃，使用方法和slf4net类似。Sample已经加入源码。另外.NET Core也加入了类似的接口。感觉使用微软定义的接口，然后按需求挑选开源实现是个不错的方向。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/log/" rel="tag"># log</a>
+          
+            <a href="/tags/NLog/" rel="tag"># NLog</a>
+          
+            <a href="/tags/slf4net/" rel="tag"># slf4net</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/23/manage-database-migration-using-maven-and-flyway/" rel="next" title="使用maven和flyway管理数据库schema">
+                <i class="fa fa-chevron-left"></i> 使用maven和flyway管理数据库schema
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/17/accelerate-docker-in-AWS-China/" rel="prev" title="为aws中国配置docker镜像加速">
+                为aws中国配置docker镜像加速 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      
+        <div id="gitment-container"></div>
+        
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="woodylic" />
+          <p class="site-author-name" itemprop="name">woodylic</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#项目结构"><span class="nav-number">1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现Slf4Net-Sample-Library"><span class="nav-number">2.</span> <span class="nav-text">实现Slf4Net.Sample.Library</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现Slf4Net-Sample-App"><span class="nav-number">3.</span> <span class="nav-text">实现Slf4Net.Sample.App</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在Slf4Net-Sample-App配置日志模块"><span class="nav-number">4.</span> <span class="nav-text">在Slf4Net.Sample.App配置日志模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调试"><span class="nav-number">5.</span> <span class="nav-text">调试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更新"><span class="nav-number">7.</span> <span class="nav-text">更新</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">woodylic</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+    
+    
+    
+    
+    <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+    <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+    
+        <script type="text/javascript">
+            var gitment = new Gitment({
+                id: document.location.href, 
+                owner: 'woodylic',
+                repo: 'woodylic.github.io',
+                oauth: {
+                    client_id: '2106df437f5c0fb0a901',
+                    client_secret: 'a8b716c2752000e03054f8bff9a059fa35ef7d3c',
+                }});
+            gitment.render('gitment-container');
+        </script>
+    
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
