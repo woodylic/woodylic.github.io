@@ -326,14 +326,7 @@
 
       
         
-          
-          一个常见的CI流程，build -&gt; unit test -&gt; coverage analysis -&gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。
-准备试验项目准备一个简单的计算器library项目和对应的xunit项目：
-12345CoreCalc  |-- src      |-- CoreCalc.Lib  |--test      |-- CoreCalc.Lib.UnitTest
-验证build和test正常工作：
-12~/CoreCalc$dotnet build
-123~/CoreCalc$dotnet test test/CoreCalc.Lib.UnitTest/CoreCal
-          ...
+          <p>一个常见的CI流程，build -&gt; unit test -&gt; coverage analysis -&gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/04/28/dotnet-core-cross-platform-code-coverage/" rel="contents">

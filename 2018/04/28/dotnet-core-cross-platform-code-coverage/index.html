@@ -96,18 +96,18 @@
 
 
 
-<meta name="description" content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。 准备试验项目准备一个简单的计算器library项目和对应">
+<meta name="description" content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。">
 <meta name="keywords" content="netcore,test,CI">
 <meta property="og:type" content="article">
 <meta property="og:title" content=".net core跨平台代码覆盖分析">
 <meta property="og:url" content="http://woodylic.github.io/2018/04/28/dotnet-core-cross-platform-code-coverage/index.html">
 <meta property="og:site_name" content="woodylic&#39;s tech blog">
-<meta property="og:description" content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。 准备试验项目准备一个简单的计算器library项目和对应">
+<meta property="og:description" content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-28T10:26:42.052Z">
+<meta property="og:updated_time" content="2018-04-28T10:29:07.933Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content=".net core跨平台代码覆盖分析">
-<meta name="twitter:description" content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。 准备试验项目准备一个简单的计算器library项目和对应">
+<meta name="twitter:description" content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。">
 
 
 
@@ -327,44 +327,45 @@
 
       
         <p>一个常见的CI流程，build -&gt; unit test -&gt; coverage analysis -&gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。</p>
+<a id="more"></a>
 <h2 id="准备试验项目"><a href="#准备试验项目" class="headerlink" title="准备试验项目"></a>准备试验项目</h2><p>准备一个简单的计算器library项目和对应的xunit项目：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">CoreCalc</div><div class="line">  |-- src</div><div class="line">      |-- CoreCalc.Lib</div><div class="line">  |--test</div><div class="line">      |-- CoreCalc.Lib.UnitTest</div></pre></td></tr></table></figure>
 <p>验证build和test正常工作：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc$</div><div class="line">dotnet build</div></pre></td></tr></table></figure>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc$</div><div class="line">dotnet <span class="built_in">test</span> <span class="built_in">test</span>/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \</div><div class="line">  --no-restore --no-build</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc$</span></div><div class="line">dotnet build</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc$</span></div><div class="line">dotnet <span class="built_in">test</span> <span class="built_in">test</span>/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \</div><div class="line">  --no-restore --no-build</div></pre></td></tr></table></figure>
 <p>如有多个测试项目，可以另建一个*.Test.sln文件，把测试项目加进去，然后对改sln执行测试。</p>
 <h2 id="输出测试结果"><a href="#输出测试结果" class="headerlink" title="输出测试结果"></a>输出测试结果</h2><p><code>dotnet test</code> 的默认输出是console，如果需要把测试结果publish到Jenkins等CI系统，需要先把测试结果保存下来。<a href="https://github.com/Faizan2304/LoggerExtensions" target="_blank" rel="external">Logger Extensions</a>项目提供了此功能，通过指定test的logger参数，把测试结果记录到文件中，目前支持AppVeyor, NUnit和xUnit3三种格式。</p>
 <p>下面以xUnit Logger为例：</p>
 <ol>
 <li>为测试项目添加XunitLogger</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc/<span class="built_in">test</span>/CoreCalc.Lib.UnitTest$</div><div class="line">dotnet add package XunitXml.TestLogger --version 2.0.0</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc/test/CoreCalc.Lib.UnitTest$</span></div><div class="line">dotnet add package XunitXml.TestLogger --version 2.0.0</div></pre></td></tr></table></figure>
 <ol>
 <li>执行测试的时候加入logger参数</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc</div><div class="line">dotnet <span class="built_in">test</span> <span class="built_in">test</span>/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \</div><div class="line">  --no-restore --no-build \</div><div class="line">  --logger:xunit</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc</span></div><div class="line">dotnet <span class="built_in">test</span> <span class="built_in">test</span>/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \</div><div class="line">  --no-restore --no-build \</div><div class="line">  --logger:xunit</div></pre></td></tr></table></figure>
 <p>测试结果保存到测试项目的TestResults文件夹下。</p>
 <h2 id="统计代码覆盖率"><a href="#统计代码覆盖率" class="headerlink" title="统计代码覆盖率"></a>统计代码覆盖率</h2><p>.Net以往开源的coverage选择貌似只有OpenCover一个，Windows only。今年出现了一个新的选择，<a href="https://github.com/tonerdo/coverlet" target="_blank" rel="external">Coverlet</a>，支持跨平台，（目标）支持多种格式的report。</p>
 <p>使用方法也很简单：</p>
 <ol>
 <li>为测试项目添加coverlet</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc/<span class="built_in">test</span>/CoreCalc.Lib.UnitTest$</div><div class="line">dotnet add package coverlet.msbuild --version 1.1.1</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc/test/CoreCalc.Lib.UnitTest$</span></div><div class="line">dotnet add package coverlet.msbuild --version 1.1.1</div></pre></td></tr></table></figure>
 <ol>
 <li>执行测试的时候加入logger参数</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc</div><div class="line">dotnet <span class="built_in">test</span> <span class="built_in">test</span>/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \</div><div class="line">  --no-restore --no-build \</div><div class="line">  -p:CollectCoverage=<span class="literal">true</span> \</div><div class="line">  -p:CoverletOutputFormat=opencover \</div><div class="line">  -p:CoverletOutputDirectory=../../artifacts/coverage</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc</span></div><div class="line">dotnet <span class="built_in">test</span> <span class="built_in">test</span>/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \</div><div class="line">  --no-restore --no-build \</div><div class="line">  -p:CollectCoverage=<span class="literal">true</span> \</div><div class="line">  -p:CoverletOutputFormat=opencover \</div><div class="line">  -p:CoverletOutputDirectory=../../artifacts/coverage</div></pre></td></tr></table></figure>
 <h2 id="生成代码覆盖报告"><a href="#生成代码覆盖报告" class="headerlink" title="生成代码覆盖报告"></a>生成代码覆盖报告</h2><p>通常和<a href="https://github.com/OpenCover/opencover" target="_blank" rel="external">OpenCover</a>一起配合使用的是<a href="https://github.com/danielpalme/ReportGenerator" target="_blank" rel="external">ReportGenerator</a>，目前alpha版已经支持跨平台了，可以直接选用。</p>
 <p>使用方法如下：</p>
 <ol>
 <li>为测试项目添加ReportGenerator</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc/<span class="built_in">test</span>/CoreCalc.Lib.UnitTest$</div><div class="line">dotnet add package ReportGenerator --version 4.0.0-alpha3</div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc/test/CoreCalc.Lib.UnitTest$</span></div><div class="line">dotnet add package ReportGenerator --version 4.0.0-alpha3</div></pre></td></tr></table></figure>
 <p>注：这里纯粹是为了dotnet restore的时候会下载ReportGenerator而已，代码并不会引用。</p>
 <ol>
 <li>生成报告：</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">~/CoreCalc</div><div class="line">dotnet ~/.nuget/packages/reportgenerator/4.0.0-alpha3/tools/ReportGenerator.dll \</div><div class="line">  <span class="string">"-reports:artifacts/coverage/coverage.xml"</span> \</div><div class="line">  <span class="string">"-targetdir:artifacts/coverage"</span></div></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ~/CoreCalc</span></div><div class="line">dotnet ~/.nuget/packages/reportgenerator/4.0.0-alpha3/tools/ReportGenerator.dll \</div><div class="line">  <span class="string">"-reports:artifacts/coverage/coverage.xml"</span> \</div><div class="line">  <span class="string">"-targetdir:artifacts/coverage"</span></div></pre></td></tr></table></figure>
 <p>可以看到覆盖率报告生成到了artifacts/coverage下。</p>
 
       
