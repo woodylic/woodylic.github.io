@@ -10,6 +10,8 @@ date: 2018-04-28 18:26:42
 
 一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。
 
+<!-- more -->
+
 ## 准备试验项目
 
 准备一个简单的计算器library项目和对应的xunit项目：
@@ -25,12 +27,12 @@ CoreCalc
 验证build和test正常工作：
 
 ```sh
-~/CoreCalc$
+# ~/CoreCalc$
 dotnet build
 ```
 
 ```sh
-~/CoreCalc$
+# ~/CoreCalc$
 dotnet test test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \
   --no-restore --no-build
 ```
@@ -46,14 +48,14 @@ dotnet test test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \
 1. 为测试项目添加XunitLogger
 
 ```sh
-~/CoreCalc/test/CoreCalc.Lib.UnitTest$
+# ~/CoreCalc/test/CoreCalc.Lib.UnitTest$
 dotnet add package XunitXml.TestLogger --version 2.0.0
 ```
 
 2. 执行测试的时候加入logger参数
 
 ```sh
-~/CoreCalc
+# ~/CoreCalc
 dotnet test test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \
   --no-restore --no-build \
   --logger:xunit
@@ -70,14 +72,14 @@ dotnet test test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \
 1. 为测试项目添加coverlet
 
 ```sh
-~/CoreCalc/test/CoreCalc.Lib.UnitTest$
+# ~/CoreCalc/test/CoreCalc.Lib.UnitTest$
 dotnet add package coverlet.msbuild --version 1.1.1
 ```
 
 2. 执行测试的时候加入logger参数
 
 ```sh
-~/CoreCalc
+# ~/CoreCalc
 dotnet test test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \
   --no-restore --no-build \
   -p:CollectCoverage=true \
@@ -94,7 +96,7 @@ dotnet test test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj \
 1. 为测试项目添加ReportGenerator
 
 ```sh
-~/CoreCalc/test/CoreCalc.Lib.UnitTest$
+# ~/CoreCalc/test/CoreCalc.Lib.UnitTest$
 dotnet add package ReportGenerator --version 4.0.0-alpha3
 ```
 
@@ -103,7 +105,7 @@ dotnet add package ReportGenerator --version 4.0.0-alpha3
 2. 生成报告：
 
 ```sh
-~/CoreCalc
+# ~/CoreCalc
 dotnet ~/.nuget/packages/reportgenerator/4.0.0-alpha3/tools/ReportGenerator.dll \
   "-reports:artifacts/coverage/coverage.xml" \
   "-targetdir:artifacts/coverage"
