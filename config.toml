@@ -1,6 +1,6 @@
 baseURL = "https://woodylic.github.io/"
-languageCode = "zh-cn"
-defaultContentLanguage = "zh-cn"                             # en / zh-cn / ... (This field determines which i18n file to use)
+languageCode = "en"
+defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
 title = "woodylic's blog"
 preserveTaxonomyNames = true
 enableRobotsTXT = true
@@ -54,7 +54,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   gitRepo = ""
 
   # site info (optional)                                  # 站点信息（可选，不需要的可以直接注释掉）
-  logoTitle = "woodylic"        # default: the title value    # 默认值: 上面设置的title值
+  logoTitle = "woodylic's blog"        # default: the title value    # 默认值: 上面设置的title值
   keywords = ["developer"]
   description = "woodylic's personal blog."
 
