@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://woodylic.github.io/sitemap.xml
