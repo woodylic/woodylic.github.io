@@ -7,7 +7,7 @@ tags: [".net core", "test", "CI/CD"]
 
 一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。
 
-<!-- more -->
+<!--more-->
 
 ## 准备试验项目
 

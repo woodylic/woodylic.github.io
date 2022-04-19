@@ -9,7 +9,7 @@ tags: ["log", "NLog", "slf4net"]
 关于为什么用slf4net，可以参照这篇文章：
 [第三方组件引用另一个第三方组件的悲剧](http://www.cnblogs.com/blqw/p/3726493.html)。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。
 
-<!-- more -->
+<!--more-->
 
 # 项目结构
 

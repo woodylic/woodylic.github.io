@@ -22,7 +22,7 @@ void SimpleTestCase()
 }
 ```
 
-<!-- more -->
+<!--more-->
 
 接下去要考虑的事情，就是看怎么实现具体的方法了。很幸运地，VS开始支持录制脚本了（类似QTP），所以我们不需要太担心如何调用浏览器的navigate和back操作，录制就好。针对navigate这个动作，我们针对IE和Firefox分别录了两次。
 

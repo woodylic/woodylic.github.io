@@ -13,7 +13,7 @@ tags: ["maven"]
 
 但是scheme.sql放在/src/test/resources下其实不太合理，数据库的scheme脚本应该是project级别的，不应该放在test下。而放在/src/main/resources下感觉也不太合理，/src/main/resources下放置的内容应该是在运行时会用到的各种配置文件。
 
-<!-- more -->
+<!--more-->
 
 参考[what's the recommened location for sql ddl scripts](http://stackoverflow.com/questions/7686334/whats-the-recommended-location-for-sql-ddl-scripts)，我把scheme.sql移到了/src/main/db。对应地，在单元测试初始化数据库的时候，script location就不能用classpath来定位了。把spring配置修改一下，以${project.basedir}开始，定位ddl脚本。
 ```xml

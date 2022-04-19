@@ -12,7 +12,7 @@ Filtering是maven的resource插件提供的功能，作用是用环境变量、p
 
 <profile>是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的<dependencies>，<properties>等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。
 
-<!-- more -->
+<!--more-->
 
 # Filtering + Profile管理不同环境的配置
 

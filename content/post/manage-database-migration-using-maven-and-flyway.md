@@ -12,7 +12,7 @@ tags: ["maven", "flyway"]
 
 *参考：[Why database migrations?](https://flywaydb.org/getstarted/why)*
 
-<!-- more -->
+<!--more-->
 
 # liquibase和flyway
 
