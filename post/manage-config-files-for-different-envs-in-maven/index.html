@@ -1,0 +1,330 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>在maven中使用profile和filtering管理多环境配置 - woodylic's blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="woodylic"><meta name=description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件"><meta name=keywords content="developer">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="在maven中使用profile和filtering管理多环境配置">
+<meta property="og:description" content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2017-02-23T23:46:46+00:00">
+<meta property="article:modified_time" content="2017-02-23T23:46:46+00:00">
+<meta itemprop=name content="在maven中使用profile和filtering管理多环境配置">
+<meta itemprop=description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件"><meta itemprop=datePublished content="2017-02-23T23:46:46+00:00">
+<meta itemprop=dateModified content="2017-02-23T23:46:46+00:00">
+<meta itemprop=wordCount content="812">
+<meta itemprop=keywords content="maven,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="在maven中使用profile和filtering管理多环境配置">
+<meta name=twitter:description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>在maven中使用profile和filtering管理多环境配置</h1>
+<div class=post-meta>
+<span class=post-time> 2017-02-23 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#filtering>Filtering</a></li>
+<li><a href=#profile>Profile</a></li>
+<li><a href=#filtering--profile管理不同环境的配置>Filtering + Profile管理不同环境的配置</a>
+<ul>
+<li><a href=#定义profile>定义profile</a></li>
+<li><a href=#定义properties文件>定义properties文件</a></li>
+<li><a href=#在pom定义build行为>在pom定义build行为</a></li>
+<li><a href=#为不同环境构建>为不同环境构建</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h1 id=filtering>Filtering</h1>
+<p>Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})</p>
+<h1 id=profile>Profile</h1>
+<p><profile>是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的<dependencies>，<properties>等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。</p>
+<h1 id=filtering--profile管理不同环境的配置>Filtering + Profile管理不同环境的配置</h1>
+<p>为每个环境定义profile，以及对应的属性(properties)。构建时通过激活相应的profile，用其中的属性去替换application.properties里的占位符。</p>
+<h2 id=定义profile>定义profile</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;project&gt;</span>
+  <span class=nt>&lt;profiles&gt;</span>
+    <span class=nt>&lt;profile&gt;</span>
+      <span class=nt>&lt;id&gt;</span>dev<span class=nt>&lt;/id&gt;</span>
+      <span class=nt>&lt;properties&gt;</span>  
+        <span class=c>&lt;!-- 定义active.profile变量 --&gt;</span>
+        <span class=nt>&lt;active.profile&gt;</span>dev<span class=nt>&lt;/active.profile&gt;</span>
+      <span class=nt>&lt;/properties&gt;</span>
+      <span class=nt>&lt;activation&gt;</span>
+        <span class=c>&lt;!-- 作为默认profile --&gt;</span>
+        <span class=nt>&lt;activeByDefault&gt;</span>true<span class=nt>&lt;/activeByDefault&gt;</span>
+      <span class=nt>&lt;/activation&gt;</span>
+    <span class=nt>&lt;/profile&gt;</span>
+    <span class=nt>&lt;profile&gt;</span>
+      <span class=nt>&lt;id&gt;</span>prod<span class=nt>&lt;/id&gt;</span>
+      <span class=nt>&lt;properties&gt;</span>
+        <span class=c>&lt;!-- 定义active.profile变量 --&gt;</span>
+        <span class=nt>&lt;active.profile&gt;</span>prod<span class=nt>&lt;/active.profile&gt;</span>
+      <span class=nt>&lt;/properties&gt;</span>
+    <span class=nt>&lt;/profile&gt;</span>
+  <span class=nt>&lt;/profiles&gt;</span>
+<span class=err>&lt;</span>/project
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=定义properties文件>定义properties文件</h2>
+<p>文件结构如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>/main
+  /filters
+    /db.dev.properties   #dev环境配置
+    /db.prod.properties  #prod环境配置
+  /resources
+    /db.properties       #真正被程序使用的配置文件
+</code></pre></td></tr></table>
+</div>
+</div><p>/resources/db.properties文件的内容如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>dataSource=${db.dataSource}
+driverClassName=${db.driverClassName}
+url=${db.url}
+username=${db.username}
+password=${db.password}
+</code></pre></td></tr></table>
+</div>
+</div><p>/filters/db.dev.properties文件内容如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>db.dataSource=org.apache.commons.dbcp2.BasicDataSource
+db.driverClassName=com.mysql.jdbc.Driver
+db.url=jdbc:mysql://127.0.0.1:3306/todolist-db?useUnicode=true&amp;characterEncoding=utf8
+db.username=root
+db.password=123qwe
+</code></pre></td></tr></table>
+</div>
+</div><p>/filters/db.prod.properties内容类似，不再贴出。</p>
+<h2 id=在pom定义build行为>在pom定义build行为</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;build&gt;</span>
+  <span class=nt>&lt;filters&gt;</span>
+    <span class=c>&lt;!-- 指定filter位置，注意路径里用到了第一步定义的profile属性 --&gt;</span>
+    <span class=nt>&lt;filter&gt;</span>src/main/filters/db.${active.profile}.properties<span class=nt>&lt;/filter&gt;</span>
+  <span class=nt>&lt;/filters&gt;</span>
+  <span class=nt>&lt;resources&gt;</span>
+    <span class=c>&lt;!-- 定义resources位置，注意filtering要设为true --&gt;</span>
+    <span class=nt>&lt;resource&gt;</span>
+      <span class=nt>&lt;directory&gt;</span>src/main/resources<span class=nt>&lt;/directory&gt;</span>
+      <span class=nt>&lt;filtering&gt;</span>true<span class=nt>&lt;/filtering&gt;</span>
+    <span class=nt>&lt;/resource&gt;</span>
+  <span class=nt>&lt;/resources&gt;</span>
+<span class=nt>&lt;/build&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=为不同环境构建>为不同环境构建</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=nx>mvn</span> <span class=nx>clean</span> <span class=kn>package</span> <span class=o>-</span><span class=nx>Pprod</span>  <span class=err>#</span><span class=nx>为prod环境构建</span>
+<span class=nx>mvn</span> <span class=nx>clean</span> <span class=kn>package</span>         <span class=err>#</span><span class=nx>没有指定profile</span><span class=err>，</span><span class=nx>默认为dev环境构建</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>woodylic</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2017-02-23
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/maven/>maven</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/move-db-scheme-out-from-resources-folder/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">把db scheme脚本移出resources目录</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/test-dao-with-dbunit/>
+<span class="next-text nav-default">用DbUnit实现Dao层的单元测试</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://www.linkedin.com/in/woodylic class="iconfont icon-linkedin" title=linkedin></a>
+<a href=https://github.com/woodylic class="iconfont icon-github" title=github></a>
+<a href=https://woodylic.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2012 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>woodylic</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

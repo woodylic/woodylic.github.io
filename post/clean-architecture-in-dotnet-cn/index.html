@@ -1,0 +1,673 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>翻译：Clean Architecture in .Net - woodylic's blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="woodylic"><meta name=description content="源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演"><meta name=keywords content="developer">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="翻译：Clean Architecture in .Net">
+<meta property="og:description" content="源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2017-08-24T10:05:44+00:00">
+<meta property="article:modified_time" content="2017-08-24T10:05:44+00:00">
+<meta itemprop=name content="翻译：Clean Architecture in .Net">
+<meta itemprop=description content="源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演"><meta itemprop=datePublished content="2017-08-24T10:05:44+00:00">
+<meta itemprop=dateModified content="2017-08-24T10:05:44+00:00">
+<meta itemprop=wordCount content="6216">
+<meta itemprop=keywords content="Architecture,DDD,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="翻译：Clean Architecture in .Net">
+<meta name=twitter:description content="源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>翻译：Clean Architecture in .Net</h1>
+<div class=post-meta>
+<span class=post-time> 2017-08-24 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#前言>前言</a>
+<ul>
+<li><a href=#问题>问题</a></li>
+<li><a href=#解决办法>解决办法</a></li>
+</ul>
+</li>
+<li><a href=#clean-architecture概述>Clean Architecture概述</a>
+<ul>
+<li><a href=#依赖规则>依赖规则</a></li>
+</ul>
+</li>
+<li><a href=#练习>练习</a>
+<ul>
+<li><a href=#业务需求>业务需求</a></li>
+<li><a href=#交互器对象interactor>交互器对象（Interactor）</a></li>
+<li><a href=#领域实体entity>领域实体（Entity）</a></li>
+<li><a href=#集成aspnet-mvc应用>集成ASP.NET MVC应用</a></li>
+<li><a href=#表现层>表现层</a></li>
+</ul>
+</li>
+<li><a href=#结论>结论</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p><strong>源文链接</strong>：<a href=https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50>Clean Architecture in .Net</a>（翻译：<a href=https://woodylic.github.io>woodylic</a>）</p>
+<h1 id=前言>前言</h1>
+<p>几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演讲的启发下，我尝试把在ASP.NET MVC应用中实践Robert提到的观点。</p>
+<h2 id=问题>问题</h2>
+<blockquote>
+<p>PM：客户需要可以在线上订购产品。
+我：好的，那么我需要把订单存在某个数据库里面，并且需要在页面上显示出来
+PM：对了，如果库存没了，是不允许下单的。
+我：你应该早点告诉我的&mldr; 我现在要添加新列用于过滤。</p>
+</blockquote>
+<p>三个月后</p>
+<blockquote>
+<p>PM：
+为什么我们的bug那么多？
+为什么我们的网站那么慢？
+为什么这个改动要花这么多时间？</p>
+</blockquote>
+<p>我承认这样的抱怨很公平，因为这些问题是我写的代码造成的。</p>
+<p>项目总是从简单开始，然后（由于需求变动）逐渐变得复杂，最终变成一个“大泥球”（big ball of mud）。</p>
+<p>我意识到，（直接把业务逻辑映射为具体实现的做法，）数据库通常会成为瓶颈，表现层逻辑混杂着业务逻辑和数据访问代码，这使得（单元/集成）测试变得非常困难。</p>
+<h2 id=解决办法>解决办法</h2>
+<p>然后我看到了Uncle Bob的演讲Agility and Architecture （<a href="https://www.youtube.com/watch?v=0oGpWmS0aYQ">youtube链接</a>），在演讲里面提到了另一种解决方法：&ldquo;Clean Architecture&rdquo;。在这种架构下，业务逻辑处于架构的中心位置，而web和数据库作为实现细节（位于架构外层）。</p>
+<p>这个演讲解释了我之前碰到的问题，也给出了解决方案。<strong>但是，Uncle Bob并没有提供任何源码！</strong> 为了充分理解该架构，我需要一个具体的例子。我接下去看了很多Uncle Bob的书和视频课程，从中学到了很多。但还是在试图把这些原则应用到真实项目中时依然十分挣扎。</p>
+<p>随后我尝试在实践中坚持其中的一些原则，发现效果确实不错。在这篇博客中我会阐述这些实践细节，并解释遵循的原则对实践的帮助，同时也会分享相应的代码样本。</p>
+<h1 id=clean-architecture概述>Clean Architecture概述</h1>
+<p>在开始之前，我们先回顾一下Clean Architecture的关键元素。我不会对架构本身做详细地解释，如果你之前没有了解过，请先观看上面提到的视频，或者阅读Uncle Bob的博客<a href=https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html>The Clean Architecture</a>（<a href=http://www.cnblogs.com/yjf512/archive/2012/09/10/2678313.html>译文</a>）。</p>
+<h2 id=依赖规则>依赖规则</h2>
+<p>{% qnimg the_onion_architecture.png %}</p>
+<p>Clean Architecture的目的之一，是通过一种清晰的方式，把应用的业务逻辑封装起来。</p>
+<p>上图展示了该架构，其中领域实体（Entity）和用例（Use case）处于“洋葱”的中心。</p>
+<blockquote>
+<p><strong>Uncle Bob:</strong></p>
+<p>用一组同心圆表示不同层级的软件代码，总的来说，越往内，抽象层次越高。最外层的圈代表的是机制级别的系统。最内层的代表的是策略级别的系统。</p>
+</blockquote>
+<p>注意图中的依赖方向指出，<strong>代码依赖只能使由外向内</strong>。在实践中，这意味着你需要把描述业务逻辑的代码从具体交付机制（UI是web还是app，数据存放在数据库还是NoSql，等等）中分离出来。</p>
+<p>{% qnimg policies_and_mechanism.png %}</p>
+<p>这样能确保你的业务规则能独立存在，而不依赖于具体的框架选择和实现。</p>
+<p>这样做有以下好处：</p>
+<ul>
+<li>分离关注点。</li>
+<li>业务规则代码只描述业务领域，不关注其他。</li>
+<li>在更换数据存储或web框架时，不需要改变业务逻辑代码。</li>
+<li>业务规则易于测试。</li>
+<li>业务规则易于重构。</li>
+</ul>
+<p>向内依赖规则不仅限制业务规则，其他各处也都需要遵循。但隔离业务规则是Clean Architecture提供的最有价值的一点。</p>
+<p>在实践中应该怎样做到呢？</p>
+<h1 id=练习>练习</h1>
+<p>现在开始用一个具体例子来尝试实践这些原则。</p>
+<h2 id=业务需求>业务需求</h2>
+<p>我们将从用例开始，这是很自然的做法。通常来说，开始一个项目是为了解决用户的具体问题。（在编写用例的时候，我们考虑）软件需要做什么事情，以及需要和用户如何交互。</p>
+<p>{% qnimg funda_logo.png %}</p>
+<p><a href=http://www.funda.nl/>Funda</a> （作者的雇主）是荷兰的一个在线房地产平台。想象我们在开发一个新的功能，让某处特定房产的潜在客户联系对应的房产代理。</p>
+<p>在Funda我们使用scrum。我们使用用户故事（User story）描述待实现功能的业务价值。</p>
+<blockquote>
+<p><strong>用户故事: 联系房产代理</strong></p>
+<p>作为顾客，我希望联系意向房产的代理，以了解该房产的更多细节。</p>
+</blockquote>
+<p>然后我们会把User story展开为正式的用例。</p>
+<blockquote>
+<p><strong>用例: 联系房产代理</strong></p>
+<p>数据:</p>
+<ul>
+<li>Email（必填，格式必须符合email规范）</li>
+<li>PhoneNumber（必填）</li>
+<li>HouseId（意向房产的Id）</li>
+</ul>
+<p>主流程:</p>
+<ul>
+<li>客户发起 “联系房产代理”请求并提供上述数据。</li>
+<li>系统验证所有输入数据。</li>
+<li>系统把该请求记录下来，并在稍后通知房产代理。</li>
+<li>向用户展示处理结果（记录成功）。</li>
+</ul>
+<p>异常流程: 验证失败</p>
+<ul>
+<li>终止处理该请求。</li>
+<li>向用户展示错误信息。</li>
+</ul>
+</blockquote>
+<p>通常我们的开发人员并不需要把用例如此正规地形成文档。在本案例中我写成这样，是因为这有助于说明Clean Architecture的某些概念。</p>
+<p>注意在用例中，我们只描述用户和系统的交互逻辑，而不会说明任何实现细节（如联系信息会被如何存储，UI如何呈现等）。这个用例可能会实现为控制台程序，电话程序或者网站，而用例并不负责确定实现方式。这正是问题的关键，用例用于描述“系统做什么”，但并不提及“系统怎么做”（Uncle Bob：业务逻辑不需要了解任何外部结构。）</p>
+<h2 id=交互器对象interactor>交互器对象（Interactor）</h2>
+<p>在Clean Architecture中，每个用例的主流程通常可以映射为一个Uncle Bob称之为Interactor（交互器）的对象。Interactor以操作领域实体的方式描述用户和系统的交互模型。领域实体指的是应用里面的业务对象，例如本例中的Hourse。</p>
+<p>根据以上创建的用例，我们写出了以下Interactor。依赖的ContactAgentRequestMessage，ContactAgentResponseMessage和ContactAgentRequestMessageValidator请参阅github源码，其中Request/Response Message均为POCO类，Validator用于验证参数正确性。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>ContactAgentInteractor</span> <span class=p>:</span>
+    <span class=n>IRequestHandler</span><span class=p>&lt;</span><span class=n>ContactAgentRequestMessage</span><span class=p>,</span><span class=n>ContactAgentResponseMessage</span><span class=p>&gt;</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IRepository</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>House</span><span class=p>&gt;</span> <span class=m>_</span><span class=n>repository</span><span class=p>;</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>IValidator</span><span class=p>&lt;</span><span class=n>ContactAgentRequestMessage</span><span class=p>&gt;</span> <span class=m>_</span><span class=n>validator</span><span class=p>;</span>
+
+    <span class=k>public</span> <span class=n>ContactAgentInteractor</span><span class=p>(</span>
+            <span class=n>IValidator</span><span class=p>&lt;</span><span class=n>ContactAgentRequestMessage</span><span class=p>&gt;</span> <span class=n>validator</span><span class=p>,</span>
+            <span class=n>IRepository</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>House</span><span class=p>&gt;</span> <span class=n>repository</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=m>_</span><span class=n>validator</span> <span class=p>=</span> <span class=n>validator</span><span class=p>;</span>
+        <span class=m>_</span><span class=n>repository</span> <span class=p>=</span> <span class=n>repository</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=n>ContactAgentResponseMessage</span> <span class=n>Handle</span><span class=p>(</span>
+            <span class=n>ContactAgentRequestMessage</span> <span class=n>request</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>validationResult</span> <span class=p>=</span> <span class=m>_</span><span class=n>validator</span><span class=p>.</span><span class=n>Validate</span><span class=p>(</span><span class=n>request</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>validationResult</span><span class=p>.</span><span class=n>IsValid</span> <span class=p>==</span> <span class=k>false</span><span class=p>)</span>
+            <span class=k>return</span> <span class=k>new</span> <span class=n>ContactAgentResponseMessage</span><span class=p>(</span><span class=n>validationResult</span><span class=p>);</span>
+
+        <span class=kt>var</span> <span class=n>house</span> <span class=p>=</span> <span class=m>_</span><span class=n>repository</span><span class=p>.</span><span class=n>Get</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=n>HouseId</span><span class=p>);</span>
+        <span class=n>house</span><span class=p>.</span><span class=n>RegisterInterest</span><span class=p>(</span><span class=k>new</span> <span class=n>Interest</span>
+        <span class=p>{</span>
+            <span class=n>CustomerEmailAddress</span> <span class=p>=</span> <span class=n>request</span><span class=p>.</span><span class=n>CustomerEmailAddress</span><span class=p>,</span>
+            <span class=n>CustomerPhoneNumber</span> <span class=p>=</span> <span class=n>request</span><span class=p>.</span><span class=n>CustomerPhoneNumber</span><span class=p>,</span>
+            <span class=n>CreationDate</span> <span class=p>=</span> <span class=n>DateTime</span><span class=p>.</span><span class=n>Now</span>
+        <span class=p>});</span>
+
+        <span class=m>_</span><span class=n>repository</span><span class=p>.</span><span class=n>Save</span><span class=p>(</span><span class=n>house</span><span class=p>);</span>
+
+        <span class=k>return</span> <span class=k>new</span> <span class=n>ContactAgentResponseMessage</span><span class=p>(</span>
+                        <span class=n>validationResult</span><span class=p>,</span>
+                        <span class=n>request</span><span class=p>.</span><span class=n>HouseId</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个Interactor里面有几个点需要注意：</p>
+<ol>
+<li>几乎是一对一地翻译了之前定义的用例。</li>
+<li>使用了简单消息（plain request/response message，plain指的是POCO对象，区别于Http Request/Response这种为某种context定义的对象）作为输入/输出，并没有任何ASP.NET的引用。</li>
+<li>依赖于IRepository。</li>
+</ol>
+<p>上述Interactor只是按功能规格，简明地描述了系统应该如何运作（以支持该功能需求）。</p>
+<p>Interactor通过plain message接收参数和返回结果，这样做可以把Interactor从使用它的应用中解耦出来。Interactor只需要知道Request/Response Message，不再需要知道其他系统实现细节。</p>
+<p>Interactor通过Repository（在洋葱图中称之为Gateway）获得实体，然后对其进行操作，再通过Repository保存修改后的实体。这个依赖顺序是违反了向内依赖规则的，但我们可以引入接口，并通过使用依赖倒置原则来处理这种情况。</p>
+<p>{% qnimg repository_ioc.png %}</p>
+<p>如上图所示，Interactor依赖定义在实体层的IRepository接口。该接口定义了实体的读/写功能，但不提供具体实现。Interactor对象并不依赖该接口在接口适配层（Interface Adapters）的具体实现。</p>
+<h2 id=领域实体entity>领域实体（Entity）</h2>
+<p>上面我们提到了领域实体，比如本例中的Hourse，现在我们对此做进一步讨论。</p>
+<blockquote>
+<p><strong>Uncle Bob:</strong></p>
+<p>领域实体用于封装公司的业务规则。 一个实体可以是有方法的对象，或者是一组数据结构和函数，这并不重要，只要确保实体可以被用在公司各个不同的应用中。</p>
+<p>如果你只是写一个独立的应用（而不需要考虑在企业内共享），那么领域实体就是该应用的业务对象。领域实体封装了上层业务规则，通常来说，在外部环境变动的时候，这些实体对象是不应被改变的。</p>
+<p>例如，你不会期望实体会被页面导航，或者安全方面的改动所影响。在任何应用中，操作层的变更都不应该影响领域实体层。</p>
+</blockquote>
+<p>如何为业务领域建模是另一个大的话题，我在这里不做太多讨论。不过（在建模完成后），实现是很直接了当的：在本例中，我使用下面的POCO类描述应用的业务对象和业务规则。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>House</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>int?</span> <span class=n>Id</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>Address</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=n>IList</span><span class=p>&lt;</span><span class=n>Interest</span><span class=p>&gt;</span> <span class=n>Leads</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span>  <span class=p>}</span>
+
+    <span class=k>public</span> <span class=n>House</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>Leads</span> <span class=p>=</span> <span class=k>new</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Interest</span><span class=p>&gt;();</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=k>void</span> <span class=n>RegisterInterest</span><span class=p>(</span><span class=n>Interest</span> <span class=n>interest</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>Leads</span><span class=p>.</span><span class=n>Add</span><span class=p>(</span><span class=n>interest</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>Interest</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>CustomerEmailAddress</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>long</span> <span class=n>CustomerPhoneNumber</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=n>DateTime</span> <span class=n>CreationDate</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在Funda，我们公布房源信息，而客户可以关注对特定房源，这就是我们的业务模型。而使用领域模型（而不是具体的web应用实现）来描述该业务模型，这样的做法非常简洁。保持这部分代码简单明了，在重构系统或添加新功能的时候，能提供更高的灵活度。</p>
+<p>我承认这是一个非常简单甚至简陋的领域模型的例子（有人称之为贫血模型），但我希望通过这个例子可以说明：</p>
+<p>你确实可以通过POCO类来描述业务应用的运行行为，然后你可以在应用中直接引用它们，从而避免把业务逻辑混淆到处理web，数据库，消息队列或其他“交付机制”（delivery mechanisms）的代码中。</p>
+<p><strong>任务完成!</strong></p>
+<p>{% qnimg clean_arch_console.png %}</p>
+<p>{% qnimg suprised_cat.png %}</p>
+<p>嗯，真完成了，某种意义上……</p>
+<p>回顾一下，我们已经实现了：</p>
+<ul>
+<li>Interactor对象</li>
+<li>Request/Response消息</li>
+<li>业务领域Entity</li>
+</ul>
+<p>依赖它们，你已经可以对项目待解决的问题进行建模，描述以及单元测试。虽然它还不是一个能工作的web应用。我并不是在开玩笑，在某种意义上，业务逻辑确实是可以在实现任何交付机制（web，database，etc.）之前完成的。</p>
+<p>对我来说，一点关键的认知是，在实现了这些基础后，你可以为你的项目或者准备要解决的问题开始建模了。你可以为这些类写单元测试或者console应用，以证明这些业务逻辑是满足需求的。事实上，我在源码里面确实加入了一个用于测试的console应用。</p>
+<p>下面我会简略地谈及如何把这些已有部分集成到web应用中。但我希望现在已经说服你相信，web应用可以搭建在我已经演示的Clean Architecture之上。</p>
+<h2 id=集成aspnet-mvc应用>集成ASP.NET MVC应用</h2>
+<p>如果你希望通过ASP.NET MVC应用来呈现我们已经实现的业务逻辑，接下去要写的代码将会落在Clean Architecture的接口适配层（Interface Adapter）。</p>
+<blockquote>
+<p><strong>Uncle Bob:</strong></p>
+<p>这一层的软件结构的目的就是进行数据的转换，将便于用户实例和实体层操作的数据结构变化成为最便于外部结构（比如数据库或者Web）操作的数据结构。比如GUI的MVC结构，表现器、视图器、控制器都是属于这个结构的。这层很可能是通过控制器将数据结构传给用户实例层，并且返回数据给表现器，视图器。</p>
+</blockquote>
+<p>实际上大部分的web应用具体实现能在这层找到。</p>
+<p>当我们的客户想通过网站联系房产代理，通常他们需要填写一些HTML表单。然后<strong>模型绑定器(model binder)<strong>会把表单数据转换为强类型的</strong>ContactAgentRequestMessage</strong>对象，并交由<strong>AgentController</strong>处理该请求：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>AgentController</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>ContactAgentInteractor</span> <span class=m>_</span><span class=n>interactor</span><span class=p>;</span>
+    <span class=k>private</span> <span class=k>readonly</span> <span class=n>ContactAgentResponsePresenter</span> <span class=m>_</span><span class=n>presenter</span><span class=p>;</span>
+
+    <span class=k>public</span> <span class=n>AgentController</span><span class=p>(</span><span class=n>ContactAgentInteractor</span> <span class=n>interactor</span><span class=p>,</span>
+                            <span class=n>ContactAgentResponsePresenter</span> <span class=n>presenter</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=m>_</span><span class=n>interactor</span> <span class=p>=</span> <span class=n>interactor</span><span class=p>;</span>
+        <span class=m>_</span><span class=n>presenter</span> <span class=p>=</span> <span class=n>presenter</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=k>void</span> <span class=n>Contact</span><span class=p>(</span><span class=n>ContactAgentRequestMessage</span> <span class=n>requestMessage</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>var</span> <span class=n>response</span> <span class=p>=</span> <span class=m>_</span><span class=n>interactor</span><span class=p>.</span><span class=n>Handle</span><span class=p>(</span><span class=n>requestMessage</span><span class=p>);</span>
+        <span class=kt>var</span> <span class=n>viewModel</span> <span class=p>=</span> <span class=m>_</span><span class=n>presenter</span><span class=p>.</span><span class=n>Handle</span><span class=p>(</span><span class=n>response</span><span class=p>);</span>
+        <span class=kt>var</span> <span class=n>view</span> <span class=p>=</span> <span class=k>new</span> <span class=n>ConsoleView</span><span class=p>(</span><span class=n>viewModel</span><span class=p>);</span>
+        <span class=n>view</span><span class=p>.</span><span class=n>Render</span><span class=p>();</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>现在我们必须越过边界进入内层，也就是业务逻辑的所在。我们通过调用Interactor对象的Handle方法做到了这点，在这里，我们需要先考虑清楚，在方法调用中，我们应该使用什么样的数据结构传递参数。</p>
+<blockquote>
+<p><strong>Uncle Bob:</strong></p>
+<p>一般跨层调用的数据是简单的数据结构。你可以使用数据结构或者是简单的数据传输流，又或者可以通过函数的参数来进行传递。你也可以将数据封装到一个hashmap结构，或者一个对象中。数据传输最重要的事情是无依赖，简单。我们并不希望跨层传递的数据是实体，或者是数据表的行数据，理由是我们不希望数据有任何形式的违反依赖规则。</p>
+<p>&mldr;</p>
+<p>当我们跨层传递数据的时候，我们应该以便于内圈使用的数据格式传递。</p>
+</blockquote>
+<p>最后一句是最关键的，重复一下：</p>
+<p><strong>“当我们跨层传递数据的时候，我们应该以便于内圈使用的数据格式传递。”</strong></p>
+<p>在ASP.NET的世界里，如同Visual Studio的示例，人们倾向（基于设计好的数据库）使用Entity Framework创建实体类，并且把它们用作view model，domain entity，DTO等等。人们也会很自然地使用它们在Controller和Interactor之间传递数据，但这违反了向内依赖规则。</p>
+<p>与之相反，内圈应该定义输入参数的数据格式。在我们的例子中，作为Interactor和Controller交互的参数，<strong>ContactAgentRequestMessage</strong>类同样被定义在了业务逻辑层中。这样做就遵循了向内依赖规则。</p>
+<p>最后，Interactor对象完成它自己的工作。执行一系列的验证逻辑，然后把数据保存下来（保存动作通过<strong>IRepository</strong>接口执行，而具体的保存工作由外圈的IRepository实现来完成）。</p>
+<blockquote>
+<p><strong>Uncle Bob:</strong></p>
+<p>在接口适配层，数据在这层会被转换，将便于实体层和用户实例层使用的数据转化成为持久层能使用的数据，比如数据库。当一些外部的服务需要与用户实例层和实体层进行交互的时候，这时候需要的数据转换也理所当然地放在这一层了。</p>
+</blockquote>
+<p>在本例中我简单地实现了一个假的Repository，测试的时候你不需要安装和配置任何数据库。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>InMemoryHouseRepository</span> <span class=p>:</span> <span class=n>IRepository</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>House</span><span class=p>&gt;</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>static</span> <span class=k>readonly</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>House</span><span class=p>&gt;</span> <span class=n>Store</span> <span class=p>=</span>
+    <span class=k>new</span> <span class=n>Dictionary</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>House</span><span class=p>&gt;();</span>
+
+    <span class=n>House</span> <span class=n>IRepository</span><span class=p>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>House</span><span class=p>&gt;.</span><span class=n>Get</span><span class=p>(</span><span class=kt>int</span> <span class=n>id</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>Store</span><span class=p>[</span><span class=n>id</span><span class=p>];</span>
+    <span class=p>}</span>
+
+    <span class=k>public</span> <span class=n>House</span> <span class=n>Save</span><span class=p>(</span><span class=n>House</span> <span class=n>entity</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>entity</span><span class=p>.</span><span class=n>Id</span><span class=p>.</span><span class=n>HasValue</span> <span class=p>==</span> <span class=k>false</span><span class=p>)</span>
+            <span class=n>entity</span><span class=p>.</span><span class=n>Id</span> <span class=p>=</span> <span class=n>Store</span><span class=p>.</span><span class=n>Count</span><span class=p>;</span>
+
+        <span class=n>Store</span><span class=p>[</span><span class=n>entity</span><span class=p>.</span><span class=n>Id</span><span class=p>.</span><span class=n>Value</span><span class=p>]</span> <span class=p>=</span> <span class=n>entity</span><span class=p>;</span>
+
+        <span class=k>return</span> <span class=n>entity</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在实际项目中，通常会使用ORM框架来实现Repository。我喜欢使用NHibernate，有时候也会考虑使用Dapper。</p>
+<h2 id=表现层>表现层</h2>
+<p>在业务逻辑处理完成后，Interactor对象将返回一个ContactAgentResponseMessage消息给Controller，use case的任务到此结束。消息对象只包含最终用户必须的信息，它实际上是一种数据结构，符合use case描述的功能需求，适合被Interactor调用。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>ContactAgentResponseMessage</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=n>ValidationResult</span> <span class=n>ValidationResult</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=p>}</span>
+    <span class=k>public</span> <span class=kt>long?</span> <span class=n>HouseId</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>private</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+
+    <span class=k>public</span> <span class=n>ContactAgentResponseMessage</span><span class=p>(</span>
+        <span class=n>ValidationResult</span> <span class=n>validationResult</span><span class=p>,</span>
+        <span class=kt>int?</span> <span class=n>houseId</span> <span class=p>=</span><span class=k>null</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>HouseId</span> <span class=p>=</span> <span class=n>houseId</span><span class=p>;</span>
+        <span class=n>ValidationResult</span> <span class=p>=</span> <span class=n>validationResult</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们希望以友好的界面展示给用户，我们会使用Presenter对象把原始的ResponseMessage换行为ViewModel。ViewModel也是一种简单数据结构，但它的结构是为适配View而设计的。</p>
+<p>例如，我们希望展示友好的操作成功或失败的消息：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>ContactAgentResponsePresenter</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=n>ContactAgentResponseViewModel</span> <span class=n>Handle</span><span class=p>(</span><span class=n>ContactAgentResponseMessage</span> <span class=n>responseMessage</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>switch</span><span class=p>(</span><span class=n>responseMessage</span><span class=p>.</span><span class=n>ValidationResult</span><span class=p>.</span><span class=n>IsValid</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>case</span> <span class=k>true</span><span class=p>:</span>
+                <span class=k>return</span> <span class=k>new</span> <span class=n>ContactAgentResponseViewModel</span><span class=p>(</span><span class=n>Texts</span><span class=p>.</span><span class=n>ThankYou</span><span class=p>);</span>
+            <span class=k>case</span> <span class=k>false</span><span class=p>:</span>
+                <span class=kt>var</span> <span class=n>sb</span> <span class=p>=</span> <span class=k>new</span> <span class=n>StringBuilder</span><span class=p>();</span>
+                <span class=n>sb</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=n>Texts</span><span class=p>.</span><span class=n>ValidationError</span><span class=p>);</span>
+
+                <span class=k>foreach</span> <span class=p>(</span><span class=kt>var</span> <span class=n>error</span> <span class=k>in</span> <span class=n>responseMessage</span><span class=p>.</span><span class=n>ValidationResult</span><span class=p>.</span><span class=n>Errors</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>sb</span><span class=p>.</span><span class=n>AppendLine</span><span class=p>(</span><span class=n>error</span><span class=p>.</span><span class=n>ErrorMessage</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=k>return</span> <span class=k>new</span> <span class=n>ContactAgentResponseViewModel</span><span class=p>(</span><span class=n>sb</span><span class=p>.</span><span class=n>ToString</span><span class=p>());</span>
+        <span class=p>}</span>
+        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-csharp data-lang=csharp><span class=k>public</span> <span class=k>class</span> <span class=nc>ContactAgentResponseViewModel</span>
+<span class=p>{</span>
+    <span class=k>public</span> <span class=kt>string</span> <span class=n>Text</span> <span class=p>{</span> <span class=k>get</span><span class=p>;</span> <span class=k>private</span> <span class=k>set</span><span class=p>;</span> <span class=p>}</span>
+
+    <span class=k>public</span> <span class=n>ContactAgentResponseViewModel</span><span class=p>(</span><span class=kt>string</span> <span class=n>text</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>Text</span> <span class=p>=</span> <span class=n>text</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最后，Controller把ViewMode传递给视图引擎，引擎将用于渲染视图并展示给用户。</p>
+<p><strong>任务完成!</strong></p>
+<h1 id=结论>结论</h1>
+<p>遵循“向内以来规则”可以避免业务逻辑被外包框架和实现的变更所影响。这样做可以保持业务逻辑独立整洁，易于测试和修改。</p>
+<p>在这个（业务实现的）基础上，你可以根据用户的需要，选择以web或者其他类型的应用方式来交付系统。</p>
+<p>我提供了一个console应用作为例子，展示在.Net中如何实践这个理论。你可以在我的github上找到该例子，其中包含本文展示的所有源码。</p>
+<p>感谢Uncle Bob，Rodi Evers和Michiel van Oosterhout提供灵感！</p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>woodylic</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2017-08-24
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/architecture/>Architecture</a>
+<a href=/tags/ddd/>DDD</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/why-you-should-use-configureawait-false-in-your-library-code-cn/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">翻译：为什么应该在类库里使用ConfigureAwait(false)</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/slf4net-and-nlog/>
+<span class="next-text nav-default">slf4net和NLog集成</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://www.linkedin.com/in/woodylic class="iconfont icon-linkedin" title=linkedin></a>
+<a href=https://github.com/woodylic class="iconfont icon-github" title=github></a>
+<a href=https://woodylic.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2012 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>woodylic</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

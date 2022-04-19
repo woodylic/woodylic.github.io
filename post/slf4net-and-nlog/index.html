@@ -1,0 +1,319 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>slf4net和NLog集成 - woodylic's blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="woodylic"><meta name=description content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-sam"><meta name=keywords content="developer">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://woodylic.github.io/post/slf4net-and-nlog/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="slf4net和NLog集成">
+<meta property="og:description" content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-sam">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://woodylic.github.io/post/slf4net-and-nlog/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2017-05-31T00:10:27+00:00">
+<meta property="article:modified_time" content="2017-05-31T00:10:27+00:00">
+<meta itemprop=name content="slf4net和NLog集成">
+<meta itemprop=description content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-sam"><meta itemprop=datePublished content="2017-05-31T00:10:27+00:00">
+<meta itemprop=dateModified content="2017-05-31T00:10:27+00:00">
+<meta itemprop=wordCount content="1062">
+<meta itemprop=keywords content="log,NLog,slf4net,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="slf4net和NLog集成">
+<meta name=twitter:description content="这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-sam"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>slf4net和NLog集成</h1>
+<div class=post-meta>
+<span class=post-time> 2017-05-31 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#项目结构>项目结构</a></li>
+<li><a href=#实现slf4netsamplelibrary>实现Slf4Net.Sample.Library</a></li>
+<li><a href=#实现slf4netsampleapp>实现Slf4Net.Sample.App</a></li>
+<li><a href=#在slf4netsampleapp配置日志模块>在Slf4Net.Sample.App配置日志模块</a></li>
+<li><a href=#调试>调试</a></li>
+<li><a href=#参考资料>参考资料</a></li>
+<li><a href=#更新>更新</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/</p>
+<p>关于为什么用slf4net，可以参照这篇文章：
+<a href=http://www.cnblogs.com/blqw/p/3726493.html>第三方组件引用另一个第三方组件的悲剧</a>。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。</p>
+<h1 id=项目结构>项目结构</h1>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Slf4Net.Sample
+    |-- Slf4Net.Sample.Library
+    |-- Slf4Net.Sample.App
+</code></pre></td></tr></table>
+</div>
+</div><p>其中Slf4Net.Sample.Library是组件，Slf4Net.Sample.App是程序入口，调用Slf4Net.Sample.Library实现功能。</p>
+<h1 id=实现slf4netsamplelibrary>实现Slf4Net.Sample.Library</h1>
+<p>该项目只包含一个Class, SomeComponent。该类包含一个方法DoSomething，在方法起止位置分别写log。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>public</span> <span class=k>class</span> <span class=nc>SomeComponent</span>
+<span class=p>{</span>
+    <span class=k>private</span> <span class=k>static</span> <span class=n>slf4net</span><span class=p>.</span><span class=n>ILogger</span> <span class=m>_l</span><span class=n>ogger</span> <span class=p>=</span> <span class=n>slf4net</span><span class=p>.</span><span class=n>LoggerFactory</span><span class=p>.</span><span class=n>GetLogger</span><span class=p>(</span><span class=k>typeof</span><span class=p>(</span><span class=n>SomeComponent</span><span class=p>));</span>
+
+    <span class=k>public</span> <span class=k>void</span> <span class=n>DoSomething</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>Info</span><span class=p>(</span><span class=s>&#34;Before executing ...&#34;</span><span class=p>);</span>
+        
+        <span class=n>Console</span><span class=p>.</span><span class=n>WriteLine</span><span class=p>(</span><span class=s>&#34;Executing DoSomething&#34;</span><span class=p>);</span>
+        
+        <span class=m>_l</span><span class=n>ogger</span><span class=p>.</span><span class=n>Info</span><span class=p>(</span><span class=s>&#34;After executing ...&#34;</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该项目只依赖slf4net，logger类型为slf4net.ILogger，通过slf4net.LoggerFactory获得。具体使用哪个log library，对此项目没有任何影响。</p>
+<h1 id=实现slf4netsampleapp>实现Slf4Net.Sample.App</h1>
+<p>App项目作为程序入口，只是对Library项目的简单调用。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>class</span> <span class=nc>Program</span>
+<span class=p>{</span>
+    <span class=k>static</span> <span class=k>void</span> <span class=n>Main</span><span class=p>(</span><span class=kt>string</span><span class=p>[]</span> <span class=n>args</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>new</span> <span class=n>Slf4Net</span><span class=p>.</span><span class=n>Sample</span><span class=p>.</span><span class=n>Library</span><span class=p>.</span><span class=n>SomeComponent</span><span class=p>().</span><span class=n>DoSomething</span><span class=p>();</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=在slf4netsampleapp配置日志模块>在Slf4Net.Sample.App配置日志模块</h1>
+<p>对日志功能的实现，依赖slf4net，slf4net.NLog和NLog。通常通过配置方式声明：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;configuration&gt;</span>
+  <span class=nt>&lt;configSections&gt;</span>    
+    <span class=nt>&lt;section</span> <span class=na>name=</span><span class=s>&#34;slf4net&#34;</span> <span class=na>type=</span><span class=s>&#34;slf4net.Configuration.SlfConfigurationSection, slf4net&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;section</span> <span class=na>name=</span><span class=s>&#34;nlog&#34;</span> <span class=na>type=</span><span class=s>&#34;NLog.Config.ConfigSectionHandler, NLog&#34;</span> <span class=nt>/&gt;</span>
+  <span class=nt>&lt;/configSections&gt;</span>
+  <span class=c>&lt;!-- slf4net选择NLog作为Log实现 --&gt;</span>
+  <span class=nt>&lt;slf4net&gt;</span>
+    <span class=nt>&lt;factory</span> <span class=na>type=</span><span class=s>&#34;slf4net.NLog.NLogLoggerFactory, slf4net.NLog&#34;</span> <span class=nt>/&gt;</span>
+  <span class=nt>&lt;/slf4net&gt;</span>
+  <span class=c>&lt;!-- NLog的配置 --&gt;</span>
+  <span class=nt>&lt;nlog&gt;</span>
+    <span class=nt>&lt;targets&gt;</span>
+      <span class=nt>&lt;target</span> <span class=na>type=</span><span class=s>&#34;Console&#34;</span> <span class=na>name=</span><span class=s>&#34;simpleLog&#34;</span> <span class=na>encoding=</span><span class=s>&#34;UTF-8&#34;</span> <span class=na>layout=</span><span class=s>&#34;${date:format=HH\:mm\:ss.fff} [${level}] ${message}&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/targets&gt;</span>
+    <span class=nt>&lt;rules&gt;</span>
+      <span class=nt>&lt;logger</span> <span class=na>name=</span><span class=s>&#34;*&#34;</span> <span class=na>minlevel=</span><span class=s>&#34;Info&#34;</span> <span class=na>writeTo=</span><span class=s>&#34;simpleLog&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/rules&gt;</span>
+  <span class=nt>&lt;/nlog&gt;</span>
+<span class=nt>&lt;/configuration&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通常而言日志的配置比较长，推荐放到外部文件NLog.config。这样App.config的nlog节点需要修改为</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;nlog</span> <span class=na>configSource=</span><span class=s>&#34;NLog.config&#34;</span> <span class=nt>/&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过nuget安装NLog.Config和NLog.Schema，会自动创建NLog.config和NLog.xsd，前者提供一个简单的NLog模板，后者实现了智能提示，辅助开发人员更方便地编写NLog配置。</p>
+<h1 id=调试>调试</h1>
+<p>如果日志功能无效，可以通过在nlog节点打开internalLog（默认是Off，可以改为Debug），通过查看异常信息排查。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;nlog</span> <span class=na>internalLogLevel=</span><span class=s>&#34;Debug&#34;</span> <span class=na>internalLogFile=</span><span class=s>&#34;c:\temp\nlog-internal.log&#34;</span><span class=nt>&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=参考资料>参考资料</h1>
+<ul>
+<li><a href=https://github.com/ef-labs/slf4net/wiki/Configuration>slf4net Configuration</a></li>
+<li><a href=https://github.com/NLog/NLog/wiki>Nlog wiki</a></li>
+</ul>
+<h1 id=更新>更新</h1>
+<p>Common.Logging是另一个logging facade，比slf4net活跃，使用方法和slf4net类似。Sample已经加入源码。另外.NET Core也加入了类似的接口。感觉使用微软定义的接口，然后按需求挑选开源实现是个不错的方向。</p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>woodylic</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2017-05-31
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/log/>log</a>
+<a href=/tags/nlog/>NLog</a>
+<a href=/tags/slf4net/>slf4net</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/clean-architecture-in-dotnet-cn/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">翻译：Clean Architecture in .Net</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/manage-database-migration-using-maven-and-flyway/>
+<span class="next-text nav-default">使用maven和flyway管理数据库schema</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://www.linkedin.com/in/woodylic class="iconfont icon-linkedin" title=linkedin></a>
+<a href=https://github.com/woodylic class="iconfont icon-github" title=github></a>
+<a href=https://woodylic.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2012 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>woodylic</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

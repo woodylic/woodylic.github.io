@@ -1,0 +1,412 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>用DbUnit实现Dao层的单元测试 - woodylic's blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="woodylic"><meta name=description content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤"><meta name=keywords content="developer">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://woodylic.github.io/post/test-dao-with-dbunit/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="用DbUnit实现Dao层的单元测试">
+<meta property="og:description" content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://woodylic.github.io/post/test-dao-with-dbunit/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2017-02-22T14:37:53+00:00">
+<meta property="article:modified_time" content="2017-02-22T14:37:53+00:00">
+<meta itemprop=name content="用DbUnit实现Dao层的单元测试">
+<meta itemprop=description content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤"><meta itemprop=datePublished content="2017-02-22T14:37:53+00:00">
+<meta itemprop=dateModified content="2017-02-22T14:37:53+00:00">
+<meta itemprop=wordCount content="1776">
+<meta itemprop=keywords content="test,dbunit,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="用DbUnit实现Dao层的单元测试">
+<meta name=twitter:description content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>用DbUnit实现Dao层的单元测试</h1>
+<div class=post-meta>
+<span class=post-time> 2017-02-22 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#前言>前言</a></li>
+<li><a href=#待测项目介绍>待测项目介绍</a></li>
+<li><a href=#测试用例设计>测试用例设计</a></li>
+<li><a href=#测试数据准备>测试数据准备</a></li>
+<li><a href=#单元测试环境配置>单元测试环境配置</a></li>
+<li><a href=#编写单元测试>编写单元测试</a></li>
+<li><a href=#注意>注意</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h1 id=前言>前言</h1>
+<p>Dao层的单元测试，测试目的在于：</p>
+<ul>
+<li>验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。</li>
+<li>验证sql语句的正确性。</li>
+</ul>
+<p>单元测试的常规步骤是：</p>
+<ol>
+<li>准备测试数据。</li>
+<li>执行待测方法。</li>
+<li>检查执行结果。</li>
+</ol>
+<p>#1通常需要初始化db数据，#3通常也是检查数据库结果。</p>
+<p>在每个开发人员使用独立数据库的前提下，<a href=http://dbunit.sourceforge.net/>DbUnit</a>提供了一套控制数据库状态的方法，简化#1和#3的工作。而<a href=https://springtestdbunit.github.io/spring-test-dbunit/>Spring Test DbUnit</a>则提供了Spring和DbUnit集成，允许开发人员使用annotation而不是继承来完成数据库的setup和teardown。</p>
+<h1 id=待测项目介绍>待测项目介绍</h1>
+<p>整个测试基于<a href=https://github.com/woodylic/todo-list>todo-list</a>，个人为巩固Spring MVC + MyBatis框架搭建的练习项目。</p>
+<p>该项目的数据库只有一张数据表(tbl_todos)，结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>bigint (20)</td>
+<td>自增主键</td>
+</tr>
+<tr>
+<td>title</td>
+<td>varchar(50)</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>varchar(500)</td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>0：未完成 1：已完成</td>
+</tr>
+</tbody>
+</table>
+<p>Dao接口包含几个最常见的CRUD方法，结构如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>interface</span> <span class=nc>TodoDao</span> <span class=o>{</span>
+    <span class=kt>int</span> <span class=nf>insert</span><span class=o>(</span><span class=n>TodoItem</span> <span class=n>todoItem</span><span class=o>);</span>
+    <span class=kt>int</span> <span class=nf>update</span><span class=o>(</span><span class=n>TodoItem</span> <span class=n>todoItem</span><span class=o>);</span>
+    <span class=kt>int</span> <span class=nf>deleteByPrimaryKey</span><span class=o>(</span><span class=n>Long</span> <span class=n>id</span><span class=o>);</span>
+    <span class=n>TodoItem</span> <span class=nf>selectByPrimaryKey</span><span class=o>(</span><span class=n>Long</span> <span class=n>id</span><span class=o>);</span>
+    <span class=n>List</span><span class=o>&lt;</span><span class=n>TodoItem</span><span class=o>&gt;</span> <span class=nf>selectAll</span><span class=o>();</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=测试用例设计>测试用例设计</h1>
+<p>默认CRUD的测试用例比较简单，也不是本文重点，略。</p>
+<h1 id=测试数据准备>测试数据准备</h1>
+<p>DbUnit支持使用xml文件来定义测试数据（包括初始数据和期望结果），在本例中，预期在初始化数据库的时候，插入两条数据，测试数据文件定义如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=c>&lt;!-- basic-test-data.xml --&gt;</span>
+<span class=nt>&lt;dataset&gt;</span>
+  <span class=nt>&lt;tbl_todos</span> <span class=na>id=</span><span class=s>&#34;1&#34;</span> <span class=na>title=</span><span class=s>&#34;Professional C#&#34;</span> <span class=na>description=</span><span class=s>&#34;4th version&#34;</span> <span class=na>status=</span><span class=s>&#34;0&#34;</span> <span class=nt>/&gt;</span>
+  <span class=nt>&lt;tbl_todos</span> <span class=na>id=</span><span class=s>&#34;2&#34;</span> <span class=na>title=</span><span class=s>&#34;Core Java&#34;</span> <span class=na>description=</span><span class=s>&#34;Volume I&#34;</span> <span class=na>status=</span><span class=s>&#34;0&#34;</span> <span class=nt>/&gt;</span>
+<span class=nt>&lt;/dataset&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><em>id其实是作为自增id存在的，但是DbUnit确实可以把id控制为需要的值，可以把id改为3，4做试验。不确定是否只在h2 database里生效。</em></p>
+<p>insert测试，预期插入一条数据，期望结果如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=c>&lt;!-- expected-result-for-insert.xml --&gt;</span>
+<span class=nt>&lt;dataset&gt;</span>
+  <span class=nt>&lt;tbl_todos</span> <span class=na>id=</span><span class=s>&#34;1&#34;</span> <span class=na>title=</span><span class=s>&#34;Professional C#&#34;</span> <span class=na>description=</span><span class=s>&#34;4th version&#34;</span> <span class=na>status=</span><span class=s>&#34;0&#34;</span> <span class=nt>/&gt;</span>
+  <span class=nt>&lt;tbl_todos</span> <span class=na>id=</span><span class=s>&#34;2&#34;</span> <span class=na>title=</span><span class=s>&#34;Core Java&#34;</span> <span class=na>description=</span><span class=s>&#34;Volume I&#34;</span> <span class=na>status=</span><span class=s>&#34;0&#34;</span> <span class=nt>/&gt;</span>
+  <span class=nt>&lt;tbl_todos</span> <span class=na>id=</span><span class=s>&#34;3&#34;</span> <span class=na>title=</span><span class=s>&#34;Item Title&#34;</span> <span class=na>description=</span><span class=s>&#34;Item Description&#34;</span> <span class=na>status=</span><span class=s>&#34;0&#34;</span> <span class=nt>/&gt;</span>
+<span class=nt>&lt;/dataset&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>update和delete的期望结果类似，不在此列出。</p>
+<h1 id=单元测试环境配置>单元测试环境配置</h1>
+<p>Dao层的实现依赖Spring，单元测试也会以相同的方式获得待测Dao对象。需要准备一个专门用于Dao层单元测试的Spring配置文件。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=c>&lt;!-- spring-dao-test.xml --&gt;</span>
+<span class=nt>&lt;beans&gt;</span>
+
+  <span class=c>&lt;!-- 导入spring-dao --&gt;</span>
+  <span class=nt>&lt;import</span> <span class=na>resource=</span><span class=s>&#34;classpath:spring-dao.xml&#34;</span> <span class=nt>/&gt;</span>
+
+  <span class=c>&lt;!-- 覆盖原dataSource，使用h2数据库做单元测试 --&gt;</span>
+  <span class=nt>&lt;bean</span> <span class=na>id=</span><span class=s>&#34;dataSource&#34;</span> <span class=na>class=</span><span class=s>&#34;org.springframework.jdbc.datasource.DriverManagerDataSource&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;property</span> <span class=na>name=</span><span class=s>&#34;driverClassName&#34;</span> <span class=na>value=</span><span class=s>&#34;org.h2.Driver&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;property</span> <span class=na>name=</span><span class=s>&#34;url&#34;</span> <span class=na>value=</span><span class=s>&#34;jdbc:h2:mem:todo-list;DB_CLOSE_DELAY=-1;MODE=MySQL&#34;</span> <span class=nt>/&gt;</span>
+  <span class=nt>&lt;/bean&gt;</span>
+  <span class=nt>&lt;jdbc:initialize-database</span> <span class=na>data-source=</span><span class=s>&#34;dataSource&#34;</span> <span class=na>ignore-failures=</span><span class=s>&#34;DROPS&#34;</span><span class=nt>&gt;</span>
+    <span class=c>&lt;!-- 执行下面script完成初始化 --&gt;</span>
+    <span class=nt>&lt;jdbc:script</span> <span class=na>location=</span><span class=s>&#34;classpath:db/scheme.sql&#34;</span><span class=nt>/&gt;</span>
+  <span class=nt>&lt;/jdbc:initialize-database&gt;</span>
+<span class=nt>&lt;/beans&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一般来说用于测试的spring配置文件应该尽可能保证和项目的spring配置一致，所以通常会import项目spring配置，然后把需要修改的bean覆盖掉。本例中把数据库从MySQL改为h2，以便其他团队成员不需要做前置配置即可执行unit test。但实际上借助DbUnit，用MySQL作为单元测试的依赖也很方便。</p>
+<h1 id=编写单元测试>编写单元测试</h1>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@RunWith</span><span class=o>(</span><span class=n>SpringJUnit4ClassRunner</span><span class=o>.</span><span class=na>class</span><span class=o>)</span>                         <span class=c1>//指定使用Spring Test
+</span><span class=c1></span><span class=nd>@ContextConfiguration</span><span class=o>(</span><span class=n>value</span><span class=o>=</span><span class=s>&#34;classpath:spring-dao-test.xml&#34;</span><span class=o>)</span>    <span class=c1>//加载Spring Context
+</span><span class=c1></span><span class=nd>@TestExecutionListeners</span><span class=o>({</span>
+        <span class=n>DependencyInjectionTestExecutionListener</span><span class=o>.</span><span class=na>class</span><span class=o>,</span>         <span class=c1>//为了让Spring处理DbUnit的annotation，
+</span><span class=c1></span>        <span class=n>DbUnitTestExecutionListener</span><span class=o>.</span><span class=na>class</span> <span class=o>})</span>                    <span class=c1>//必须使用的ExecutionListener
+</span><span class=c1></span><span class=kd>public</span> <span class=kd>class</span> <span class=nc>TodoDaoTest</span> <span class=o>{</span>
+
+    <span class=nd>@Autowired</span>
+    <span class=kd>private</span> <span class=n>TodoDao</span> <span class=n>todoDao</span><span class=o>;</span>
+    
+    <span class=nd>@Test</span>
+    <span class=nd>@DatabaseSetup</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=o>{</span><span class=s>&#34;basic-test-data.xml&#34;</span><span class=o>})</span>             <span class=c1>//指定数据库初始化数据
+</span><span class=c1></span>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>testSelectAll</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+    	<span class=n>List</span><span class=o>&lt;</span><span class=n>TodoItem</span><span class=o>&gt;</span> <span class=n>todoItems</span> <span class=o>=</span> <span class=n>todoDao</span><span class=o>.</span><span class=na>selectAll</span><span class=o>();</span>
+        <span class=n>assertEquals</span><span class=o>(</span><span class=n>2</span><span class=o>,</span> <span class=n>todoItems</span><span class=o>.</span><span class=na>size</span><span class=o>());</span>
+    <span class=o>}</span>
+    
+    <span class=nd>@Test</span>
+    <span class=nd>@DatabaseSetup</span><span class=o>(</span><span class=n>value</span><span class=o>=</span><span class=s>&#34;basic-test-data.xml&#34;</span><span class=o>)</span>                 <span class=c1>//指定数据库初始化数据
+</span><span class=c1></span>    <span class=nd>@ExpectedDatabase</span><span class=o>(</span><span class=n>value</span><span class=o>=</span><span class=s>&#34;expected-result-for-insert.xml&#34;</span><span class=o>)</span>   <span class=c1>//指定数据库期望结果
+</span><span class=c1></span>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>testInsert</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+    
+        <span class=n>TodoItem</span> <span class=n>todo</span> <span class=o>=</span> <span class=k>new</span> <span class=n>TodoItem</span><span class=o>();</span>
+        <span class=n>todo</span><span class=o>.</span><span class=na>setTitle</span><span class=o>(</span><span class=s>&#34;Item Title&#34;</span><span class=o>);</span>
+        <span class=n>todo</span><span class=o>.</span><span class=na>setDescription</span><span class=o>(</span><span class=s>&#34;Item Description&#34;</span><span class=o>);</span>
+        <span class=n>todo</span><span class=o>.</span><span class=na>setStatus</span><span class=o>(</span><span class=n>0</span><span class=o>);</span>
+    
+    	<span class=kt>int</span> <span class=n>impactRows</span> <span class=o>=</span> <span class=n>todoDao</span><span class=o>.</span><span class=na>insert</span><span class=o>(</span><span class=n>todo</span><span class=o>);</span>
+    	<span class=n>assertEquals</span><span class=o>(</span><span class=n>1</span><span class=o>,</span> <span class=n>impactRows</span><span class=o>);</span>
+    <span class=o>}</span>
+    
+    <span class=c1>//其他测试方法类似，略。
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=注意>注意</h1>
+<ol>
+<li>由于Dao依赖Spring生成，需要配置RunWith以及ContextConfiguration。如果不用，那么需要自己写代码读取配置文件，加载Spring Context。</li>
+<li>使用Spring Test DbUnit，必须配置好DbUnitTestExecutionListener及其依赖DependencyInjectionTestExecutionListener。</li>
+<li>@DatabaseSetup在执行的时候会清空数据库，再插入初始化数据。如果期望数据库在测试方法结束回滚，需要添加下面代码：</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@DatabaseTeardown</span><span class=o>(</span><span class=n>value</span><span class=o>=</span><span class=s>&#34;basic-test-data.xml&#34;</span><span class=o>,</span> <span class=n>DatabaseOperation</span><span class=o>.</span><span class=na>DELETE</span><span class=o>)</span> <span class=c1>//删除data-set里的数据。
+</span></code></pre></td></tr></table>
+</div>
+</div><ol start=4>
+<li>编写testInsert的时候，原来打算在空数据库内插入数据，预期结果是数据表里面有一条id=1的数据。但是发现JUnit在执行的时候，会优先执行SELECT测试，把basic-test-data.xml的数据加载。Teardown会把数据删除，但不是恢复数据库状态，所以在执行INSERT的时候，生成的id是3而不是1。考虑到Unit Test Case之间不允许相互依赖，在这个例子中，哪怕其他方法都做了Teardown，insert也应该做DatabaseSetup，获得一个稳定的前置状态。</li>
+</ol>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>woodylic</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2017-02-22
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/test/>test</a>
+<a href=/tags/dbunit/>dbunit</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/manage-config-files-for-different-envs-in-maven/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">在maven中使用profile和filtering管理多环境配置</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/polymorphic-sample-for-tester/>
+<span class="next-text nav-default">面向对象的多态</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://www.linkedin.com/in/woodylic class="iconfont icon-linkedin" title=linkedin></a>
+<a href=https://github.com/woodylic class="iconfont icon-github" title=github></a>
+<a href=https://woodylic.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2012 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>woodylic</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>.net core跨平台代码覆盖分析 - woodylic's blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="woodylic"><meta name=description content="一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code cove"><meta name=keywords content="developer">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://woodylic.github.io/post/dotnet-core-cross-platform-code-coverage/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content=".net core跨平台代码覆盖分析">
+<meta property="og:description" content="一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code cove">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://woodylic.github.io/post/dotnet-core-cross-platform-code-coverage/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2018-04-28T18:26:42+00:00">
+<meta property="article:modified_time" content="2018-04-28T18:26:42+00:00">
+<meta itemprop=name content=".net core跨平台代码覆盖分析">
+<meta itemprop=description content="一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code cove"><meta itemprop=datePublished content="2018-04-28T18:26:42+00:00">
+<meta itemprop=dateModified content="2018-04-28T18:26:42+00:00">
+<meta itemprop=wordCount content="907">
+<meta itemprop=keywords content=".net core,test,CI/CD,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content=".net core跨平台代码覆盖分析">
+<meta name=twitter:description content="一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code cove"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>.net core跨平台代码覆盖分析</h1>
+<div class=post-meta>
+<span class=post-time> 2018-04-28 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#准备试验项目>准备试验项目</a></li>
+<li><a href=#输出测试结果>输出测试结果</a></li>
+<li><a href=#统计代码覆盖率>统计代码覆盖率</a></li>
+<li><a href=#生成代码覆盖报告>生成代码覆盖报告</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。</p>
+<h2 id=准备试验项目>准备试验项目</h2>
+<p>准备一个简单的计算器library项目和对应的xunit项目：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>CoreCalc
+  |-- src
+      |-- CoreCalc.Lib
+  |--test
+      |-- CoreCalc.Lib.UnitTest
+</code></pre></td></tr></table>
+</div>
+</div><p>验证build和test正常工作：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc$</span>
+dotnet build
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc$</span>
+dotnet <span class=nb>test</span> test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj <span class=se>\
+</span><span class=se></span>  --no-restore --no-build
+</code></pre></td></tr></table>
+</div>
+</div><p>如有多个测试项目，可以另建一个*.Test.sln文件，把测试项目加进去，然后对改sln执行测试。</p>
+<h2 id=输出测试结果>输出测试结果</h2>
+<p><code>dotnet test</code> 的默认输出是console，如果需要把测试结果publish到Jenkins等CI系统，需要先把测试结果保存下来。<a href=https://github.com/Faizan2304/LoggerExtensions>Logger Extensions</a>项目提供了此功能，通过指定test的logger参数，把测试结果记录到文件中，目前支持AppVeyor, NUnit和xUnit3三种格式。</p>
+<p>下面以xUnit Logger为例：</p>
+<ol>
+<li>为测试项目添加XunitLogger</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc/test/CoreCalc.Lib.UnitTest$</span>
+dotnet add package XunitXml.TestLogger --version 2.0.0
+</code></pre></td></tr></table>
+</div>
+</div><ol start=2>
+<li>执行测试的时候加入logger参数</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc</span>
+dotnet <span class=nb>test</span> test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj <span class=se>\
+</span><span class=se></span>  --no-restore --no-build <span class=se>\
+</span><span class=se></span>  --logger:xunit
+</code></pre></td></tr></table>
+</div>
+</div><p>测试结果保存到测试项目的TestResults文件夹下。</p>
+<h2 id=统计代码覆盖率>统计代码覆盖率</h2>
+<p>.Net以往开源的coverage选择貌似只有OpenCover一个，Windows only。今年出现了一个新的选择，<a href=https://github.com/tonerdo/coverlet>Coverlet</a>，支持跨平台，（目标）支持多种格式的report。</p>
+<p>使用方法也很简单：</p>
+<ol>
+<li>为测试项目添加coverlet</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc/test/CoreCalc.Lib.UnitTest$</span>
+dotnet add package coverlet.msbuild --version 1.1.1
+</code></pre></td></tr></table>
+</div>
+</div><ol start=2>
+<li>执行测试的时候加入logger参数</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc</span>
+dotnet <span class=nb>test</span> test/CoreCalc.Lib.UnitTest/CoreCalc.Lib.UnitTest.csproj <span class=se>\
+</span><span class=se></span>  --no-restore --no-build <span class=se>\
+</span><span class=se></span>  -p:CollectCoverage<span class=o>=</span><span class=nb>true</span> <span class=se>\
+</span><span class=se></span>  -p:CoverletOutputFormat<span class=o>=</span>opencover <span class=se>\
+</span><span class=se></span>  -p:CoverletOutputDirectory<span class=o>=</span>../../artifacts/coverage
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=生成代码覆盖报告>生成代码覆盖报告</h2>
+<p>通常和<a href=https://github.com/OpenCover/opencover>OpenCover</a>一起配合使用的是<a href=https://github.com/danielpalme/ReportGenerator>ReportGenerator</a>，目前alpha版已经支持跨平台了，可以直接选用。</p>
+<p>使用方法如下：</p>
+<ol>
+<li>为测试项目添加ReportGenerator</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc/test/CoreCalc.Lib.UnitTest$</span>
+dotnet add package ReportGenerator --version 4.0.0-alpha3
+</code></pre></td></tr></table>
+</div>
+</div><p>注：这里纯粹是为了dotnet restore的时候会下载ReportGenerator而已，代码并不会引用。</p>
+<ol start=2>
+<li>生成报告：</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ~/CoreCalc</span>
+dotnet ~/.nuget/packages/reportgenerator/4.0.0-alpha3/tools/ReportGenerator.dll <span class=se>\
+</span><span class=se></span>  <span class=s2>&#34;-reports:artifacts/coverage/coverage.xml&#34;</span> <span class=se>\
+</span><span class=se></span>  <span class=s2>&#34;-targetdir:artifacts/coverage&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到覆盖率报告生成到了artifacts/coverage下。</p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>woodylic</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2018-04-28
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/.net-core/>.net core</a>
+<a href=/tags/test/>test</a>
+<a href=/tags/ci/cd/>CI/CD</a>
+</div>
+<nav class=post-nav>
+<a class=next href=/post/why-you-should-use-configureawait-false-in-your-library-code-cn/>
+<span class="next-text nav-default">翻译：为什么应该在类库里使用ConfigureAwait(false)</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://www.linkedin.com/in/woodylic class="iconfont icon-linkedin" title=linkedin></a>
+<a href=https://github.com/woodylic class="iconfont icon-github" title=github></a>
+<a href=https://woodylic.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2012 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>woodylic</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

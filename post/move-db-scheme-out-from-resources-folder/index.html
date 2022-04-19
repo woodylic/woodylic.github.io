@@ -1,0 +1,252 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>把db scheme脚本移出resources目录 - woodylic's blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="woodylic"><meta name=description content="在用DbUnit实现Dao层的单元测试中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化data"><meta name=keywords content="developer">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://woodylic.github.io/post/move-db-scheme-out-from-resources-folder/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="把db scheme脚本移出resources目录">
+<meta property="og:description" content="在用DbUnit实现Dao层的单元测试中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化data">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://woodylic.github.io/post/move-db-scheme-out-from-resources-folder/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2017-03-02T00:00:50+00:00">
+<meta property="article:modified_time" content="2017-03-02T00:00:50+00:00">
+<meta itemprop=name content="把db scheme脚本移出resources目录">
+<meta itemprop=description content="在用DbUnit实现Dao层的单元测试中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化data"><meta itemprop=datePublished content="2017-03-02T00:00:50+00:00">
+<meta itemprop=dateModified content="2017-03-02T00:00:50+00:00">
+<meta itemprop=wordCount content="785">
+<meta itemprop=keywords content="maven,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="把db scheme脚本移出resources目录">
+<meta name=twitter:description content="在用DbUnit实现Dao层的单元测试中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化data"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>woodylic's blog</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>把db scheme脚本移出resources目录</h1>
+<div class=post-meta>
+<span class=post-time> 2017-03-02 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class=post-toc-content>
+<nav id=TableOfContents></nav>
+</div>
+</div>
+<div class=post-content>
+<p>在<a href=https://github.com/woodylic/blog/issues/2>用DbUnit实现Dao层的单元测试</a>中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化dataSource的时候，可以很方便地初始化数据库：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;jdbc:initialize-database</span> <span class=na>data-source=</span><span class=s>&#34;dataSource&#34;</span> <span class=na>ignore-failures=</span><span class=s>&#34;DROPS&#34;</span><span class=nt>&gt;</span>
+  <span class=nt>&lt;jdbc:script</span> <span class=na>location=</span><span class=s>&#34;classpath:scheme.sql&#34;</span><span class=nt>/&gt;</span>
+<span class=nt>&lt;/jdbc:initialize-database&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>但是scheme.sql放在/src/test/resources下其实不太合理，数据库的scheme脚本应该是project级别的，不应该放在test下。而放在/src/main/resources下感觉也不太合理，/src/main/resources下放置的内容应该是在运行时会用到的各种配置文件。</p>
+<p>参考<a href=http://stackoverflow.com/questions/7686334/whats-the-recommended-location-for-sql-ddl-scripts>what&rsquo;s the recommened location for sql ddl scripts</a>，我把scheme.sql移到了/src/main/db。对应地，在单元测试初始化数据库的时候，script location就不能用classpath来定位了。把spring配置修改一下，以${project.basedir}开始，定位ddl脚本。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;jdbc:initialize-database</span> <span class=na>data-source=</span><span class=s>&#34;dataSource&#34;</span> <span class=na>ignore-failures=</span><span class=s>&#34;DROPS&#34;</span><span class=nt>&gt;</span>
+  <span class=nt>&lt;jdbc:script</span> <span class=na>location=</span><span class=s>&#34;file:///${project.basedir}/src/main/db/scheme.sql&#34;</span><span class=nt>/&gt;</span>
+<span class=nt>&lt;/jdbc:initialize-database&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再次执行测试，失败了。Cannot resolve ${project.basedir}。${project.basedir}是maven的变量，Spring是无法直接读取的。但是可以通过properties文件来传递。具体的步骤如下：</p>
+<ol>
+<li>为测试创建一个/src/test/resources/test-env.properties文件。</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>project.basedir = ${project.basedir}
+</code></pre></td></tr></table>
+</div>
+</div><ol start=2>
+<li>在pom里配置对test-env.properties文件使用filter。这样在maven处理test resources的时候，会把${project.basedir}替换为变量值。</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;build&gt;</span>
+  <span class=nt>&lt;testResource&gt;</span>
+    <span class=nt>&lt;directory&gt;</span>src/test/resources<span class=nt>&lt;/directory&gt;</span>
+    <span class=nt>&lt;filtering&gt;</span>true<span class=nt>&lt;/filtering&gt;</span>
+  <span class=nt>&lt;/testResource&gt;</span>
+<span class=nt>&lt;/build&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol start=3>
+<li>在Spring配置文件中引用test-env.properties，然后使用project.basedir属性定位scheme文件。</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;bean</span> <span class=na>class=</span><span class=s>&#34;org.springframework.beans.factory.config.PropertyPlaceholderConfigurer&#34;</span><span class=nt>&gt;</span>
+  <span class=nt>&lt;property</span> <span class=na>name=</span><span class=s>&#34;locations&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;array&gt;</span>
+      <span class=nt>&lt;value&gt;</span>classpath:test-env.properties<span class=nt>&lt;/value&gt;</span>
+    <span class=nt>&lt;/array&gt;</span>
+  <span class=nt>&lt;/property&gt;</span>
+<span class=nt>&lt;/bean&gt;</span>
+
+<span class=nt>&lt;jdbc:initialize-database</span> <span class=na>data-source=</span><span class=s>&#34;dataSource&#34;</span> <span class=na>ignore-failures=</span><span class=s>&#34;DROPS&#34;</span><span class=nt>&gt;</span>
+  <span class=nt>&lt;jdbc:script</span> <span class=na>location=</span><span class=s>&#34;file:///${project.basedir}/src/main/db/scheme.sql&#34;</span><span class=nt>/&gt;</span>
+<span class=nt>&lt;/jdbc:initialize-database&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>重新执行测试，顺利通过。</p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>woodylic</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2017-03-02
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/maven/>maven</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/manage-database-migration-using-maven-and-flyway/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">使用maven和flyway管理数据库schema</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/manage-config-files-for-different-envs-in-maven/>
+<span class="next-text nav-default">在maven中使用profile和filtering管理多环境配置</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://www.linkedin.com/in/woodylic class="iconfont icon-linkedin" title=linkedin></a>
+<a href=https://github.com/woodylic class="iconfont icon-github" title=github></a>
+<a href=https://woodylic.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2012 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>woodylic</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>
