@@ -15,7 +15,3 @@
 `hugo`
 
 网站内容生成在 `./public`。
-
-## 参考文章
-
-[Eureka官方文档](https://www.wangchucheng.com/zh/docs/)
