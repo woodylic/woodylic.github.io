@@ -11,7 +11,10 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="woodylic"><meta name=description content="本文以自动化测试为例子解释面向对象中的多态概念。 从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求"><meta name=keywords content="developer">
+<meta name=author content="woodylic"><meta name=description content="本文以自动化测试为例子解释面向对象中的多态概念。
+从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。
+首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。
+1 2 3 4 5 6 7 8 9  void SimpleTestCase() { Navigate(); ValidateNavigate(); Back(); ValidateBack(); }   "><meta name=keywords content="developer">
 <meta name=generator content="Hugo 0.91.2 with theme even">
 <link rel=canonical href=https://woodylic.github.io/post/polymorphic-sample-for-tester/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -22,18 +25,99 @@
 <link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="面向对象的多态">
-<meta property="og:description" content="本文以自动化测试为例子解释面向对象中的多态概念。 从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求">
+<meta property="og:description" content="本文以自动化测试为例子解释面向对象中的多态概念。
+从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。
+首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+
+void SimpleTestCase()
+{
+     Navigate();
+     ValidateNavigate(); 
+
+     Back();
+
+     ValidateBack(); 
+}
+
+
+">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://woodylic.github.io/post/polymorphic-sample-for-tester/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2012-06-22T16:26:02+00:00">
 <meta property="article:modified_time" content="2012-06-22T16:26:02+00:00">
 <meta itemprop=name content="面向对象的多态">
-<meta itemprop=description content="本文以自动化测试为例子解释面向对象中的多态概念。 从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求"><meta itemprop=datePublished content="2012-06-22T16:26:02+00:00">
+<meta itemprop=description content="本文以自动化测试为例子解释面向对象中的多态概念。
+从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。
+首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+
+void SimpleTestCase()
+{
+     Navigate();
+     ValidateNavigate(); 
+
+     Back();
+
+     ValidateBack(); 
+}
+
+
+"><meta itemprop=datePublished content="2012-06-22T16:26:02+00:00">
 <meta itemprop=dateModified content="2012-06-22T16:26:02+00:00">
 <meta itemprop=wordCount content="3727">
 <meta itemprop=keywords content="OOD,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="面向对象的多态">
-<meta name=twitter:description content="本文以自动化测试为例子解释面向对象中的多态概念。 从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="本文以自动化测试为例子解释面向对象中的多态概念。
+从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。
+首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+
+void SimpleTestCase()
+{
+     Navigate();
+     ValidateNavigate(); 
+
+     Back();
+
+     ValidateBack(); 
+}
+
+
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -119,8 +203,7 @@
 <span class=p>}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-<p>接下去要考虑的事情，就是看怎么实现具体的方法了。很幸运地，VS开始支持录制脚本了（类似QTP），所以我们不需要太担心如何调用浏览器的navigate和back操作，录制就好。针对navigate这个动作，我们针对IE和Firefox分别录了两次。</p>
+</div><p>接下去要考虑的事情，就是看怎么实现具体的方法了。很幸运地，VS开始支持录制脚本了（类似QTP），所以我们不需要太担心如何调用浏览器的navigate和back操作，录制就好。针对navigate这个动作，我们针对IE和Firefox分别录了两次。</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1

@@ -1,1 +1,68 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>woodylic's blog</title><link>https://woodylic.github.io/</link><description>Recent content on woodylic's blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 28 Apr 2018 18:26:42 +0000</lastBuildDate><atom:link href="https://woodylic.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>.net core跨平台代码覆盖分析</title><link>https://woodylic.github.io/post/dotnet-core-cross-platform-code-coverage/</link><pubDate>Sat, 28 Apr 2018 18:26:42 +0000</pubDate><guid>https://woodylic.github.io/post/dotnet-core-cross-platform-code-coverage/</guid><description>一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code cove</description></item><item><title>翻译：为什么应该在类库里使用ConfigureAwait(false)</title><link>https://woodylic.github.io/post/why-you-should-use-configureawait-false-in-your-library-code-cn/</link><pubDate>Mon, 11 Dec 2017 13:04:09 +0000</pubDate><guid>https://woodylic.github.io/post/why-you-should-use-configureawait-false-in-your-library-code-cn/</guid><description>源文链接：C#: Why you should use ConfigureAwait(false) in your library code （翻译：woodylic） 自从.NET 4.5引入了async/await以后，编写异步代码变得相当容易。A</description></item><item><title>翻译：Clean Architecture in .Net</title><link>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</link><pubDate>Thu, 24 Aug 2017 10:05:44 +0000</pubDate><guid>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</guid><description>源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演</description></item><item><title>slf4net和NLog集成</title><link>https://woodylic.github.io/post/slf4net-and-nlog/</link><pubDate>Wed, 31 May 2017 00:10:27 +0000</pubDate><guid>https://woodylic.github.io/post/slf4net-and-nlog/</guid><description>这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-sam</description></item><item><title>使用maven和flyway管理数据库schema</title><link>https://woodylic.github.io/post/manage-database-migration-using-maven-and-flyway/</link><pubDate>Thu, 23 Mar 2017 23:58:41 +0000</pubDate><guid>https://woodylic.github.io/post/manage-database-migration-using-maven-and-flyway/</guid><description>为什么需要数据库schema版本管理 作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间</description></item><item><title>把db scheme脚本移出resources目录</title><link>https://woodylic.github.io/post/move-db-scheme-out-from-resources-folder/</link><pubDate>Thu, 02 Mar 2017 00:00:50 +0000</pubDate><guid>https://woodylic.github.io/post/move-db-scheme-out-from-resources-folder/</guid><description>在用DbUnit实现Dao层的单元测试中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化data</description></item><item><title>在maven中使用profile和filtering管理多环境配置</title><link>https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/</link><pubDate>Thu, 23 Feb 2017 23:46:46 +0000</pubDate><guid>https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/</guid><description>Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件</description></item><item><title>用DbUnit实现Dao层的单元测试</title><link>https://woodylic.github.io/post/test-dao-with-dbunit/</link><pubDate>Wed, 22 Feb 2017 14:37:53 +0000</pubDate><guid>https://woodylic.github.io/post/test-dao-with-dbunit/</guid><description>前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤</description></item><item><title>面向对象的多态</title><link>https://woodylic.github.io/post/polymorphic-sample-for-tester/</link><pubDate>Fri, 22 Jun 2012 16:26:02 +0000</pubDate><guid>https://woodylic.github.io/post/polymorphic-sample-for-tester/</guid><description>本文以自动化测试为例子解释面向对象中的多态概念。 从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>woodylic's blog</title><link>https://woodylic.github.io/</link><description>Recent content on woodylic's blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 28 Apr 2018 18:26:42 +0000</lastBuildDate><atom:link href="https://woodylic.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>.net core跨平台代码覆盖分析</title><link>https://woodylic.github.io/post/dotnet-core-cross-platform-code-coverage/</link><pubDate>Sat, 28 Apr 2018 18:26:42 +0000</pubDate><guid>https://woodylic.github.io/post/dotnet-core-cross-platform-code-coverage/</guid><description>&lt;p>一个常见的CI流程，build -&amp;gt; unit test -&amp;gt; coverage analysis -&amp;gt; package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。&lt;/p></description></item><item><title>翻译：为什么应该在类库里使用ConfigureAwait(false)</title><link>https://woodylic.github.io/post/why-you-should-use-configureawait-false-in-your-library-code-cn/</link><pubDate>Mon, 11 Dec 2017 13:04:09 +0000</pubDate><guid>https://woodylic.github.io/post/why-you-should-use-configureawait-false-in-your-library-code-cn/</guid><description>&lt;p>&lt;strong>源文链接&lt;/strong>：&lt;a href="https://medium.com/bynder-tech/c-why-you-should-use-configureawait-false-in-your-library-code-d7837dce3d7f">C#: Why you should use ConfigureAwait(false) in your library code&lt;/a> （翻译：&lt;a href="https://woodylic.github.io">woodylic&lt;/a>）&lt;/p>
+&lt;p>自从.NET 4.5引入了async/await以后，编写异步代码变得相当容易。Async/await关键字使得异步代码看起来和同步代码非常类似，这大大提高了代码的可读性以及编程效率，这多亏了编译器处理了异步编程最困难的部分。&lt;/p></description></item><item><title>翻译：Clean Architecture in .Net</title><link>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</link><pubDate>Thu, 24 Aug 2017 10:05:44 +0000</pubDate><guid>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</guid><description>&lt;p>&lt;strong>源文链接&lt;/strong>：&lt;a href="https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50">Clean Architecture in .Net&lt;/a>（翻译：&lt;a href="https://woodylic.github.io">woodylic&lt;/a>）&lt;/p>
+&lt;h1 id="前言">前言&lt;/h1>
+&lt;p>几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演讲的启发下，我尝试把在ASP.NET MVC应用中实践Robert提到的观点。&lt;/p>
+&lt;h2 id="问题">问题&lt;/h2>
+&lt;blockquote>
+&lt;p>PM：客户需要可以在线上订购产品。
+我：好的，那么我需要把订单存在某个数据库里面，并且需要在页面上显示出来
+PM：对了，如果库存没了，是不允许下单的。
+我：你应该早点告诉我的&amp;hellip; 我现在要添加新列用于过滤。&lt;/p>
+&lt;/blockquote></description></item><item><title>slf4net和NLog集成</title><link>https://woodylic.github.io/post/slf4net-and-nlog/</link><pubDate>Wed, 31 May 2017 00:10:27 +0000</pubDate><guid>https://woodylic.github.io/post/slf4net-and-nlog/</guid><description>&lt;p>这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/&lt;/p>
+&lt;p>关于为什么用slf4net，可以参照这篇文章：
+&lt;a href="http://www.cnblogs.com/blqw/p/3726493.html">第三方组件引用另一个第三方组件的悲剧&lt;/a>。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。&lt;/p></description></item><item><title>使用maven和flyway管理数据库schema</title><link>https://woodylic.github.io/post/manage-database-migration-using-maven-and-flyway/</link><pubDate>Thu, 23 Mar 2017 23:58:41 +0000</pubDate><guid>https://woodylic.github.io/post/manage-database-migration-using-maven-and-flyway/</guid><description>&lt;h1 id="为什么需要数据库schema版本管理">为什么需要数据库schema版本管理&lt;/h1>
+&lt;p>作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间，schema随着需求变化，而这些变化难以追踪记录，从而导致开发人员之间，以及各个环境下的数据库schema的一致性问题。&lt;/p>
+&lt;p>引入数据库schema版本管理，是期望模仿代码版本控制，把schema的所有版本记录下来，并且可以自动地把数据库升级到最新版本。&lt;/p>
+&lt;p>&lt;em>参考：&lt;a href="https://flywaydb.org/getstarted/why">Why database migrations?&lt;/a>&lt;/em>&lt;/p></description></item><item><title>把db scheme脚本移出resources目录</title><link>https://woodylic.github.io/post/move-db-scheme-out-from-resources-folder/</link><pubDate>Thu, 02 Mar 2017 00:00:50 +0000</pubDate><guid>https://woodylic.github.io/post/move-db-scheme-out-from-resources-folder/</guid><description>&lt;p>在&lt;a href="https://github.com/woodylic/blog/issues/2">用DbUnit实现Dao层的单元测试&lt;/a>中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化dataSource的时候，可以很方便地初始化数据库：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-xml" data-lang="xml">&lt;span class="nt">&amp;lt;jdbc:initialize-database&lt;/span> &lt;span class="na">data-source=&lt;/span>&lt;span class="s">&amp;#34;dataSource&amp;#34;&lt;/span> &lt;span class="na">ignore-failures=&lt;/span>&lt;span class="s">&amp;#34;DROPS&amp;#34;&lt;/span>&lt;span class="nt">&amp;gt;&lt;/span>
+&lt;span class="nt">&amp;lt;jdbc:script&lt;/span> &lt;span class="na">location=&lt;/span>&lt;span class="s">&amp;#34;classpath:scheme.sql&amp;#34;&lt;/span>&lt;span class="nt">/&amp;gt;&lt;/span>
+&lt;span class="nt">&amp;lt;/jdbc:initialize-database&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>但是scheme.sql放在/src/test/resources下其实不太合理，数据库的scheme脚本应该是project级别的，不应该放在test下。而放在/src/main/resources下感觉也不太合理，/src/main/resources下放置的内容应该是在运行时会用到的各种配置文件。&lt;/p></description></item><item><title>在maven中使用profile和filtering管理多环境配置</title><link>https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/</link><pubDate>Thu, 23 Feb 2017 23:46:46 +0000</pubDate><guid>https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/</guid><description>&lt;h1 id="filtering">Filtering&lt;/h1>
+&lt;p>Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})&lt;/p>
+&lt;h1 id="profile">Profile&lt;/h1>
+&lt;p>&lt;profile>是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的&lt;dependencies>，&lt;properties>等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。&lt;/p></description></item><item><title>用DbUnit实现Dao层的单元测试</title><link>https://woodylic.github.io/post/test-dao-with-dbunit/</link><pubDate>Wed, 22 Feb 2017 14:37:53 +0000</pubDate><guid>https://woodylic.github.io/post/test-dao-with-dbunit/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
+&lt;p>Dao层的单元测试，测试目的在于：&lt;/p>
+&lt;ul>
+&lt;li>验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。&lt;/li>
+&lt;li>验证sql语句的正确性。&lt;/li>
+&lt;/ul>
+&lt;p>单元测试的常规步骤是：&lt;/p>
+&lt;ol>
+&lt;li>准备测试数据。&lt;/li>
+&lt;li>执行待测方法。&lt;/li>
+&lt;li>检查执行结果。&lt;/li>
+&lt;/ol></description></item><item><title>面向对象的多态</title><link>https://woodylic.github.io/post/polymorphic-sample-for-tester/</link><pubDate>Fri, 22 Jun 2012 16:26:02 +0000</pubDate><guid>https://woodylic.github.io/post/polymorphic-sample-for-tester/</guid><description>&lt;p>本文以自动化测试为例子解释面向对象中的多态概念。&lt;/p>
+&lt;p>从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。&lt;/p>
+&lt;p>首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-CSharp" data-lang="CSharp">&lt;span class="k">void&lt;/span> &lt;span class="n">SimpleTestCase&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;span class="p">{&lt;/span>
+&lt;span class="n">Navigate&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="n">ValidateNavigate&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="n">Back&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="n">ValidateBack&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item></channel></rss>

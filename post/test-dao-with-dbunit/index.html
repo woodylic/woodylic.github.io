@@ -11,7 +11,9 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="woodylic"><meta name=description content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤"><meta name=keywords content="developer">
+<meta name=author content="woodylic"><meta name=description content="前言 Dao层的单元测试，测试目的在于：
+ 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。  单元测试的常规步骤是：
+ 准备测试数据。 执行待测方法。 检查执行结果。 "><meta name=keywords content="developer">
 <meta name=generator content="Hugo 0.91.2 with theme even">
 <link rel=canonical href=https://woodylic.github.io/post/test-dao-with-dbunit/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -22,18 +24,51 @@
 <link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="用DbUnit实现Dao层的单元测试">
-<meta property="og:description" content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤">
+<meta property="og:description" content="前言
+Dao层的单元测试，测试目的在于：
+
+验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。
+验证sql语句的正确性。
+
+单元测试的常规步骤是：
+
+准备测试数据。
+执行待测方法。
+检查执行结果。
+">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://woodylic.github.io/post/test-dao-with-dbunit/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2017-02-22T14:37:53+00:00">
 <meta property="article:modified_time" content="2017-02-22T14:37:53+00:00">
 <meta itemprop=name content="用DbUnit实现Dao层的单元测试">
-<meta itemprop=description content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤"><meta itemprop=datePublished content="2017-02-22T14:37:53+00:00">
+<meta itemprop=description content="前言
+Dao层的单元测试，测试目的在于：
+
+验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。
+验证sql语句的正确性。
+
+单元测试的常规步骤是：
+
+准备测试数据。
+执行待测方法。
+检查执行结果。
+"><meta itemprop=datePublished content="2017-02-22T14:37:53+00:00">
 <meta itemprop=dateModified content="2017-02-22T14:37:53+00:00">
 <meta itemprop=wordCount content="1776">
 <meta itemprop=keywords content="test,dbunit,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="用DbUnit实现Dao层的单元测试">
-<meta name=twitter:description content="前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="前言
+Dao层的单元测试，测试目的在于：
+
+验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。
+验证sql语句的正确性。
+
+单元测试的常规步骤是：
+
+准备测试数据。
+执行待测方法。
+检查执行结果。
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>

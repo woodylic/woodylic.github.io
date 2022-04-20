@@ -1,1 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DDD on woodylic's blog</title><link>https://woodylic.github.io/tags/ddd/</link><description>Recent content in DDD on woodylic's blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 24 Aug 2017 10:05:44 +0000</lastBuildDate><atom:link href="https://woodylic.github.io/tags/ddd/index.xml" rel="self" type="application/rss+xml"/><item><title>翻译：Clean Architecture in .Net</title><link>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</link><pubDate>Thu, 24 Aug 2017 10:05:44 +0000</pubDate><guid>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</guid><description>源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DDD on woodylic's blog</title><link>https://woodylic.github.io/tags/ddd/</link><description>Recent content in DDD on woodylic's blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 24 Aug 2017 10:05:44 +0000</lastBuildDate><atom:link href="https://woodylic.github.io/tags/ddd/index.xml" rel="self" type="application/rss+xml"/><item><title>翻译：Clean Architecture in .Net</title><link>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</link><pubDate>Thu, 24 Aug 2017 10:05:44 +0000</pubDate><guid>https://woodylic.github.io/post/clean-architecture-in-dotnet-cn/</guid><description>&lt;p>&lt;strong>源文链接&lt;/strong>：&lt;a href="https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50">Clean Architecture in .Net&lt;/a>（翻译：&lt;a href="https://woodylic.github.io">woodylic&lt;/a>）&lt;/p>
+&lt;h1 id="前言">前言&lt;/h1>
+&lt;p>几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演讲的启发下，我尝试把在ASP.NET MVC应用中实践Robert提到的观点。&lt;/p>
+&lt;h2 id="问题">问题&lt;/h2>
+&lt;blockquote>
+&lt;p>PM：客户需要可以在线上订购产品。
+我：好的，那么我需要把订单存在某个数据库里面，并且需要在页面上显示出来
+PM：对了，如果库存没了，是不允许下单的。
+我：你应该早点告诉我的&amp;hellip; 我现在要添加新列用于过滤。&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

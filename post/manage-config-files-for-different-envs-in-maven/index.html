@@ -11,7 +11,9 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="woodylic"><meta name=description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件"><meta name=keywords content="developer">
+<meta name=author content="woodylic"><meta name=description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})
+Profile 是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的，等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。
+"><meta name=keywords content="developer">
 <meta name=generator content="Hugo 0.91.2 with theme even">
 <link rel=canonical href=https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -22,18 +24,27 @@
 <link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="在maven中使用profile和filtering管理多环境配置">
-<meta property="og:description" content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件">
+<meta property="og:description" content="Filtering
+Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})
+Profile
+是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的，等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://woodylic.github.io/post/manage-config-files-for-different-envs-in-maven/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2017-02-23T23:46:46+00:00">
 <meta property="article:modified_time" content="2017-02-23T23:46:46+00:00">
 <meta itemprop=name content="在maven中使用profile和filtering管理多环境配置">
-<meta itemprop=description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件"><meta itemprop=datePublished content="2017-02-23T23:46:46+00:00">
+<meta itemprop=description content="Filtering
+Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})
+Profile
+是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的，等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。"><meta itemprop=datePublished content="2017-02-23T23:46:46+00:00">
 <meta itemprop=dateModified content="2017-02-23T23:46:46+00:00">
 <meta itemprop=wordCount content="812">
 <meta itemprop=keywords content="maven,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="在maven中使用profile和filtering管理多环境配置">
-<meta name=twitter:description content="Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="Filtering
+Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})
+Profile
+是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的，等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>

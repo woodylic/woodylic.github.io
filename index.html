@@ -85,7 +85,7 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code cove
+<p>一个常见的CI流程，build -> unit test -> coverage analysis -> package。.net core实现了跨平台，但由于工具链缺失的原因，test和code coverage只能在Windows下完成。最近工作上需要配置，发现工具链已经补充完成，基本能工作了。现把配置流程记录下来。</p>
 </div>
 <div class=read-more>
 <a href=/post/dotnet-core-cross-platform-code-coverage/ class=read-more-link>Read more...</a>
@@ -101,7 +101,8 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-源文链接：C#: Why you should use ConfigureAwait(false) in your library code （翻译：woodylic） 自从.NET 4.5引入了async/await以后，编写异步代码变得相当容易。A
+<p><strong>源文链接</strong>：<a href=https://medium.com/bynder-tech/c-why-you-should-use-configureawait-false-in-your-library-code-d7837dce3d7f>C#: Why you should use ConfigureAwait(false) in your library code</a> （翻译：<a href=https://woodylic.github.io>woodylic</a>）</p>
+<p>自从.NET 4.5引入了async/await以后，编写异步代码变得相当容易。Async/await关键字使得异步代码看起来和同步代码非常类似，这大大提高了代码的可读性以及编程效率，这多亏了编译器处理了异步编程最困难的部分。</p>
 </div>
 <div class=read-more>
 <a href=/post/why-you-should-use-configureawait-false-in-your-library-code-cn/ class=read-more-link>Read more...</a>
@@ -117,7 +118,16 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-源文链接：Clean Architecture in .Net（翻译：woodylic） 前言 几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演
+<p><strong>源文链接</strong>：<a href=https://medium.com/@stephanhoekstra/clean-architecture-in-net-8eed6c224c50>Clean Architecture in .Net</a>（翻译：<a href=https://woodylic.github.io>woodylic</a>）</p>
+<h1 id=前言>前言</h1>
+<p>几年前我偶然发现了Robert Martin的一个关于分离关注点的演讲，在这个演讲的启发下，我尝试把在ASP.NET MVC应用中实践Robert提到的观点。</p>
+<h2 id=问题>问题</h2>
+<blockquote>
+<p>PM：客户需要可以在线上订购产品。
+我：好的，那么我需要把订单存在某个数据库里面，并且需要在页面上显示出来
+PM：对了，如果库存没了，是不允许下单的。
+我：你应该早点告诉我的&mldr; 我现在要添加新列用于过滤。</p>
+</blockquote>
 </div>
 <div class=read-more>
 <a href=/post/clean-architecture-in-dotnet-cn/ class=read-more-link>Read more...</a>
@@ -133,7 +143,9 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-sam
+<p>这是一个slf4net和NLog集成的简单例子。https://github.com/woodylic/logging-facade-samples/</p>
+<p>关于为什么用slf4net，可以参照这篇文章：
+<a href=http://www.cnblogs.com/blqw/p/3726493.html>第三方组件引用另一个第三方组件的悲剧</a>。简单地说，就是解耦组件对特定log library的依赖，交由组件的调用方决定。</p>
 </div>
 <div class=read-more>
 <a href=/post/slf4net-and-nlog/ class=read-more-link>Read more...</a>
@@ -149,7 +161,10 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-为什么需要数据库schema版本管理 作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间
+<h1 id=为什么需要数据库schema版本管理>为什么需要数据库schema版本管理</h1>
+<p>作为开发人员，代码版本控制已经属于标配了，但是很多团队还不会把数据库schema纳入版本控制。在开发期间，schema随着需求变化，而这些变化难以追踪记录，从而导致开发人员之间，以及各个环境下的数据库schema的一致性问题。</p>
+<p>引入数据库schema版本管理，是期望模仿代码版本控制，把schema的所有版本记录下来，并且可以自动地把数据库升级到最新版本。</p>
+<p><em>参考：<a href=https://flywaydb.org/getstarted/why>Why database migrations?</a></em></p>
 </div>
 <div class=read-more>
 <a href=/post/manage-database-migration-using-maven-and-flyway/ class=read-more-link>Read more...</a>

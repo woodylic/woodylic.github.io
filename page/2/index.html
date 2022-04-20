@@ -85,7 +85,20 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-在用DbUnit实现Dao层的单元测试中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化data
+<p>在<a href=https://github.com/woodylic/blog/issues/2>用DbUnit实现Dao层的单元测试</a>中，我把数据库scheme脚本放在了/src/test/resources目录下，这样在初始化dataSource的时候，可以很方便地初始化数据库：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;jdbc:initialize-database</span> <span class=na>data-source=</span><span class=s>&#34;dataSource&#34;</span> <span class=na>ignore-failures=</span><span class=s>&#34;DROPS&#34;</span><span class=nt>&gt;</span>
+  <span class=nt>&lt;jdbc:script</span> <span class=na>location=</span><span class=s>&#34;classpath:scheme.sql&#34;</span><span class=nt>/&gt;</span>
+<span class=nt>&lt;/jdbc:initialize-database&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>但是scheme.sql放在/src/test/resources下其实不太合理，数据库的scheme脚本应该是project级别的，不应该放在test下。而放在/src/main/resources下感觉也不太合理，/src/main/resources下放置的内容应该是在运行时会用到的各种配置文件。</p>
 </div>
 <div class=read-more>
 <a href=/post/move-db-scheme-out-from-resources-folder/ class=read-more-link>Read more...</a>
@@ -101,7 +114,10 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-Filtering Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件
+<h1 id=filtering>Filtering</h1>
+<p>Filtering是maven的resource插件提供的功能，作用是用环境变量、pom文件里定义的属性和指定配置文件里的属性替换属性文件(*.properties)里的占位符(如${jdbc.url})</p>
+<h1 id=profile>Profile</h1>
+<p><profile>是pom文件里的一个xml元素，在profile里几乎可以定义所有在pom里的定义的内容(如depencency，build，properties等，但不能再定义profile)。当一个profile被激活时，它定义的<dependencies>，<properties>等就会覆盖掉原pom里定义的相同内容，从而可以通过激活不同的profile来使用不同的配置。</p>
 </div>
 <div class=read-more>
 <a href=/post/manage-config-files-for-different-envs-in-maven/ class=read-more-link>Read more...</a>
@@ -117,7 +133,18 @@ Filtering Filtering是maven的resource插件提供的功能，作用是用环境
 </header>
 <div class=post-content>
 <div class=post-summary>
-前言 Dao层的单元测试，测试目的在于： 验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。 验证sql语句的正确性。 单元测试的常规步骤
+<h1 id=前言>前言</h1>
+<p>Dao层的单元测试，测试目的在于：</p>
+<ul>
+<li>验证数据连接环境（包括ORM的配置和Dao的实现）的正确性。</li>
+<li>验证sql语句的正确性。</li>
+</ul>
+<p>单元测试的常规步骤是：</p>
+<ol>
+<li>准备测试数据。</li>
+<li>执行待测方法。</li>
+<li>检查执行结果。</li>
+</ol>
 </div>
 <div class=read-more>
 <a href=/post/test-dao-with-dbunit/ class=read-more-link>Read more...</a>
@@ -133,7 +160,34 @@ Filtering Filtering是maven的resource插件提供的功能，作用是用环境
 </header>
 <div class=post-content>
 <div class=post-summary>
-本文以自动化测试为例子解释面向对象中的多态概念。 从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求
+<p>本文以自动化测试为例子解释面向对象中的多态概念。</p>
+<p>从一个最简单的test case开始，打开一个网站，然后点击后退。这是一个国外的网站，所以要求同时兼容IE和Firefox。</p>
+<p>首先，我们把测试脚本写出来。脚本很简单，描述每一个测试步骤。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-CSharp data-lang=CSharp><span class=k>void</span> <span class=n>SimpleTestCase</span><span class=p>()</span>
+<span class=p>{</span>
+     <span class=n>Navigate</span><span class=p>();</span>
+     <span class=n>ValidateNavigate</span><span class=p>();</span> 
+
+     <span class=n>Back</span><span class=p>();</span>
+
+     <span class=n>ValidateBack</span><span class=p>();</span> 
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <div class=read-more>
 <a href=/post/polymorphic-sample-for-tester/ class=read-more-link>Read more...</a>
